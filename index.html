@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS: Sözcük Operasyonu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Chakra+Petch:wght@400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* CS2 Theme Colors */
+        :root {
+            --cs-orange: #de9b35;
+            --cs-dark: #0d1116;
+            --cs-gray: #1b1f27;
+            --cs-text: #b8b8b8;
+        }
+
+        body { 
+            font-family: 'Rajdhani', sans-serif; 
+            background-color: var(--cs-dark); 
+            color: #fff; 
+            background-image: radial-gradient(circle at 50% 50%, #1f232a 0%, #0d1116 100%);
+        }
+        
+        h1, h2, h3, .tactical-font { font-family: 'Black Ops One', cursive; letter-spacing: 1px; }
+        .hud-font { font-family: 'Chakra Petch', sans-serif; }
+        
+        .level-card { 
+            background: linear-gradient(90deg, rgba(30,35,45,0.9) 0%, rgba(20,25,35,0.8) 100%);
+            border-left: 4px solid #333;
+            transition: all 0.2s ease;
+        }
+        .level-card:hover { 
+            transform: translateX(5px); 
+            background: rgba(45,50,60,0.9);
+            border-left-color: var(--cs-orange);
+            box-shadow: -5px 0 15px rgba(222, 155, 53, 0.2); 
+        }
+        
+        .task-checkbox:checked + div {
+            text-decoration: line-through;
+            color: #555;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0d1116; }
+        ::-webkit-scrollbar-thumb { background: var(--cs-orange); }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            z-index: 10;
+            background: rgba(222, 155, 53, 0.1);
+            position: absolute;
+            top: 0;
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        .hidden { display: none !important; }
+        .login-box { z-index: 50; position: relative; }
+        
+        /* CS Button Style */
+        .cs-btn {
+            background: linear-gradient(180deg, #de9b35 0%, #b07015 100%);
+            border: 1px solid #ffbf60;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 0 #7a4a0a;
+            transition: all 0.1s;
+        }
+        .cs-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #7a4a0a;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden selection:bg-orange-500 selection:text-white">
+
+    <div class="scanline"></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex items-center justify-center min-h-screen p-4 bg-[url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3381077/89e57849206d445348981440e74f329971936c64.png')] bg-cover bg-center">
+        <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm z-0"></div>
+        
+        <div class="login-box bg-gray-800/95 p-8 border border-gray-600 shadow-[0_0_50px_rgba(0,0,0,0.8)] max-w-md w-full text-center relative overflow-hidden">
+            <!-- Decorative Corner -->
+            <div class="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-orange-500"></div>
+            <div class="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-orange-500"></div>
+
+            <div class="mb-6 relative">
+                <i class="fas fa-crosshairs text-6xl text-orange-500 animate-spin-slow" style="animation-duration: 10s;"></i>
+                <i class="fas fa-user-secret absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl text-white"></i>
+            </div>
+            <h1 class="text-4xl text-white mb-1 tracking-widest uppercase italic">CS: SÖZCÜK</h1>
+            <h2 class="text-2xl text-orange-500 mb-6 tracking-widest uppercase">OPERASYONU</h2>
+            
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-orange-400 mb-1 tracking-wider uppercase"><i class="fas fa-id-card mr-1"></i> Operatör Adı</label>
+                    <input type="text" id="player-name" class="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:outline-none focus:border-orange-500 transition font-mono" placeholder="Örn: s1mple">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-orange-400 mb-1 tracking-wider uppercase"><i class="fas fa-bullseye mr-1"></i> Hedef (Target)</label>
+                    <input type="text" id="target-sound" class="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:outline-none focus:border-orange-500 transition font-mono" value="Z sesi" placeholder="Örn: Z sesi">
+                </div>
+            </div>
+
+            <button type="button" onclick="startGame()" class="mt-8 w-full cs-btn text-white font-bold py-4 text-lg group cursor-pointer">
+                OPERASYONU BAŞLAT <i class="fas fa-angle-double-right ml-2 group-hover:translate-x-1 transition"></i>
+            </button>
+            
+            <div id="reset-link" class="mt-4 hidden">
+                <button onclick="clearData()" class="text-xs text-gray-500 hover:text-gray-300 underline uppercase tracking-wider">Farklı Hesapla Gir</button>
+            </div>
+
+            <!-- İMZA ALANI -->
+            <div class="mt-8 border-t border-gray-700 pt-4">
+                <p class="text-[10px] text-gray-500 font-mono tracking-widest uppercase opacity-70">
+                    Operasyon Lideri<br>
+                    <span class="text-orange-600 font-bold">stj.dkt.Mehmet Hanefi Bulduk</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME DASHBOARD -->
+    <div id="game-dashboard" class="hidden min-h-screen bg-[#0d1116] pb-20">
+        
+        <!-- HUD / Header -->
+        <header class="bg-[#1b1f27] border-b border-orange-900/30 sticky top-0 z-40 shadow-lg">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                <!-- Player Info -->
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Counter-Strike_2_logo.svg/1200px-Counter-Strike_2_logo.svg.png" class="w-12 h-12 object-contain drop-shadow-[0_0_5px_rgba(222,155,53,0.8)]">
+                    </div>
+                    <div>
+                        <h2 id="display-name" class="font-bold text-xl leading-tight text-white hud-font tracking-wide">OPERATOR</h2>
+                        <div class="flex items-center gap-3 text-xs text-gray-400 font-mono">
+                            <span class="bg-gray-800 border border-gray-600 px-2 py-0.5 text-orange-400"><i class="fas fa-crosshairs"></i> HEDEF: /<span id="display-sound">Z</span>/</span>
+                            <span class="text-green-400"><i class="fas fa-signal"></i> ONLINE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats / XP -->
+                <div class="flex flex-col items-end w-1/3">
+                    <div class="flex justify-between w-full text-xs mb-1 font-mono uppercase">
+                        <span class="text-orange-500 font-bold">Rütbe İlerlemesi</span>
+                        <span id="xp-display" class="text-white">0 / 2250 XP</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-3 border border-gray-600 skew-x-[-15deg]">
+                        <div id="xp-bar" class="bg-gradient-to-r from-orange-600 to-yellow-400 h-full transition-all duration-1000 shadow-[0_0_10px_#de9b35]" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-4 py-8">
+            
+            <!-- Map Selection (Tabs) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 justify-center">
+                <button onclick="switchTab(1)" id="tab-1" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/inferno/inferno_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 1</div>
+                            <div class="text-2xl font-black text-white italic uppercase tactical-font">SILVER</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">EĞİTİM KAMPI</div>
+                        </div>
+                    </div>
+                </button>
+                
+                <button onclick="switchTab(2)" id="tab-2" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/dust2/dust2_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 2</div>
+                            <div class="text-2xl font-black text-white italic uppercase tactical-font">GLOBAL</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">OPERASYON</div>
+                        </div>
+                    </div>
+                </button>
+
+                <button onclick="switchTab(3)" id="tab-3" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/mirage/mirage_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 3</div>
+                            <div class="text-2xl font-black text-white italic uppercase tactical-font">FACEIT LVL 10</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">PRO LİG (CÜMLE)</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="content-area" class="space-y-4">
+                <!-- Content will be injected by JS -->
+            </div>
+
+            <!-- Footer / Exit -->
+            <div class="mt-12 text-center space-y-4">
+                <button onclick="resetProgress()" class="text-xs text-red-500 hover:text-red-400 hover:underline uppercase tracking-widest p-2 border border-red-900/30 bg-red-900/10">
+                    <i class="fas fa-sign-out-alt"></i> Oyundan Çık (Disconnect)
+                </button>
+                
+                <!-- İMZA ALANI -->
+                <div class="pt-6 border-t border-gray-800 opacity-50 hover:opacity-100 transition">
+                    <i class="fas fa-shield-alt text-orange-600 mb-2 text-xl"></i>
+                    <p class="text-[10px] text-gray-400 font-mono">
+                        HAZIRLAYAN: <span class="text-orange-500 font-bold">stj.dkt.Mehmet Hanefi Bulduk</span><br>
+                        <span class="text-[9px]">COUNTER-TERRORIST UNIT</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="h-20"></div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- DATA STRUCTURE ---
+        const gameData = {
+            level1: {
+                title: "SILVER RANK: EĞİTİM KAMPI",
+                desc: "Temel atış talimleri ve telsiz kodları (Hece & Tek Heceli).",
+                color: "gray",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/inferno/inferno_1.jpg",
+                tasks: [
+                    { id: "l1d1", title: "Round 1: Silah Sesi Testi", desc: "Susturucuyu tak. Hedef sesini tek başına 5 saniye uzat (İzolasyon). 10 kez tekrarla.", xp: 100, icon: "volume-up" },
+                    { id: "l1d2", title: "Round 2: Telsiz Kodları", desc: "Takıma seslen: ZA-ZE-ZI-ZO-ZU. Her kodu 5 kez tekrarla.", xp: 100, icon: "walkie-talkie" },
+                    { id: "l1d3", title: "Round 3: Ters Köşe (Reverse)", desc: "Düşman arkada! Kodları ters çevir: AZ-EZ-IZ-OZ. Hedef sesi sonda patlat.", xp: 100, icon: "undo" },
+                    { id: "l1d4", title: "Round 4: Envanter Kontrolü", desc: "Çantasında hedef ses olan 5 eşya (Tek Heceli) bul ve 3 kez söyle.", xp: 100, icon: "box-open" },
+                    { id: "l1d5", title: "Round 5: Replay İzleme", desc: "Sesini kaydet ve dinle. Hatan var mı? Kendi oyununu analiz et.", xp: 100, icon: "headphones" },
+                    { id: "l1d6", title: "Round 6: Crossfire (Sandviç)", desc: "Sesi hem başa hem sona koy (Örn: ZOZ). İki ateş arasında kalma. 5 kelime.", xp: 100, icon: "exchange-alt" },
+                    { id: "l1d7", title: "CLUTCH ANI: Ace Atmak", desc: "Duraksamadan 5 kelimeyi arka arkaya söyle. Roundu kazan.", xp: 150, boss: true, icon: "trophy" }
+                ]
+            },
+            level2: {
+                title: "GLOBAL ELITE: OPERASYON",
+                desc: "İleri düzey taktikler (2 Heceli Kelimeler).",
+                color: "orange",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/dust2/dust2_1.jpg",
+                tasks: [
+                    { id: "l2d1", title: "Round 1: Spawn Noktası", desc: "Hedef sesin BAŞTA olduğu 5 kelime (2 heceli). Oyuna güçlü başla (Vurgulu).", xp: 100, icon: "map-marker-alt" },
+                    { id: "l2d2", title: "Round 2: Bot Taklidi", desc: "Kelimeleri Bot gibi hece hece söyle (ZAM...BAK). Arada 1 saniye bekle.", xp: 100, icon: "robot" },
+                    { id: "l2d3", title: "Round 3: Extraction (Çıkış)", desc: "Hedef sesin SONDA olduğu 5 kelime bul (Örn: CEVİZ). Sesi yutmadan bölgeyi terk et.", xp: 100, icon: "door-open" },
+                    { id: "l2d4", title: "Round 4: Wallhack Kontrolü", desc: "Partnerin yanlış okusun (Hile yapsın). Yanlışı duyunca 'BAN!' diye bağır ve masaya vur.", xp: 100, icon: "ban" },
+                    { id: "l2d5", title: "Round 5: Mid Kapışması", desc: "Hedef sesin tam ORTADA olduğu kelimeler (Örn: UZAY). Mid'i kontrol et.", xp: 100, icon: "arrows-alt-h" },
+                    { id: "l2d6", title: "Round 6: Double Kill", desc: "Her kelimeyi 2 kez peş peşe söyle: 'ZANLI-ZANLI'. Spray atar gibi seri ol.", xp: 100, icon: "clone" },
+                    { id: "l2d7", title: "MVP MOMENT: Karışık Liste", desc: "Baş-orta-son karışık liste yap. Rastgele çek ve hatasız oku. MVP ol.", xp: 150, boss: true, icon: "medal" }
+                ]
+            },
+            level3: {
+                title: "FACEIT LEVEL 10: PRO LİG",
+                desc: "Taşıyıcı ifadeler ve Cümle Düzeyinde Hakimiyet.",
+                color: "purple",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/mirage/mirage_1.jpg",
+                tasks: [
+                    { id: "l3d1", title: "Round 1: Inventory (Envanter)", desc: "Taşıyıcı İfade: 'Benim bir [KELİMEM] var.' kalıbını 5 farklı kelimeyle kullan.", xp: 100, icon: "briefcase" },
+                    { id: "l3d2", title: "Round 2: Spotting (İnfo)", desc: "Taşıyıcı İfade: 'Bu bir [KELİME].' Resimleri göstererek takıma bilgi ver.", xp: 100, icon: "eye" },
+                    { id: "l3d3", title: "Round 3: Entry Frag (Giriş)", desc: "Cümlen hedef kelimeyle başlasın. 'ZAMBAK çok güzel kokar.' gibi 5 cümle kur.", xp: 100, icon: "door-open" },
+                    { id: "l3d4", title: "Round 4: Defuse Kit (Son)", desc: "Cümlen hedef kelimeyle bitsin. 'Bahçede bir KAZ.' gibi 5 cümle kur.", xp: 100, icon: "bomb" },
+                    { id: "l3d5", title: "Round 5: Mid Control (Orta)", desc: "Hedef kelime cümlenin ortasında geçsin. 'Annem ÜZÜM aldı.' gibi 5 cümle.", xp: 100, icon: "bullseye" },
+                    { id: "l3d6", title: "Round 6: Rotation (Dönme)", desc: "Bir kelimeyle 3 farklı cümle kur (Başta, ortada, sonda). Taktik değiştir.", xp: 100, icon: "sync-alt" },
+                    { id: "l3d7", title: "GRAND FINAL: Hikaye Modu", desc: "En az 3 hedef kelime kullanarak kısa bir olay anlat. Maçı kazandır.", xp: 150, boss: true, icon: "crown" }
+                ]
+            }
+        };
+
+        // --- SAFE STORAGE WRAPPER ---
+        // Prevents crashes if localStorage is disabled/restricted
+        const Storage = {
+            get: (key) => {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    console.warn("Storage access denied/failed", e);
+                    return null;
+                }
+            },
+            set: (key, val) => {
+                try {
+                    localStorage.setItem(key, val);
+                } catch (e) {
+                    console.warn("Storage access denied/failed", e);
+                }
+            },
+            remove: (key) => {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.warn("Storage access denied/failed", e);
+                }
+            }
+        };
+
+        // --- STATE MANAGEMENT ---
+        let state = {
+            name: "",
+            sound: "",
+            completed: [], 
+            currentTab: 1
+        };
+
+        // --- INIT ---
+        window.onload = function() {
+            loadState();
+            if(state.name) {
+                showDashboard();
+            } else {
+                document.getElementById('reset-link').classList.add('hidden');
+            }
+        };
+
+        function loadState() {
+            const saved = Storage.get('cs_artik_state');
+            if(saved) {
+                try { state = JSON.parse(saved); } catch(e) { Storage.remove('cs_artik_state'); }
+            }
+        }
+
+        function saveState() {
+            Storage.set('cs_artik_state', JSON.stringify(state));
+        }
+
+        function clearData() {
+            if(confirm("Hesap verileri silinecek. Emin misin?")) {
+                Storage.remove('cs_artik_state');
+                location.reload();
+            }
+        }
+
+        function resetProgress() {
+            if(confirm("Oyundan çıkmak ve rankını sıfırlamak istiyor musun?")) {
+                Storage.remove('cs_artik_state');
+                location.reload();
+            }
+        }
+
+        // --- GAME LOGIC ---
+        function startGame() {
+            const nameInput = document.getElementById('player-name').value;
+            const soundInput = document.getElementById('target-sound').value;
+
+            if(!nameInput.trim()) {
+                alert("Lütfen Operatör Adını gir!");
+                return;
+            }
+
+            state.name = nameInput;
+            state.sound = soundInput || "Z";
+            
+            // Try to save, but continue even if it fails
+            saveState();
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('game-dashboard').classList.remove('hidden');
+            
+            document.getElementById('display-name').innerText = state.name;
+            document.getElementById('display-sound').innerText = state.sound;
+
+            // Ensure the tab view is updated immediately
+            switchTab(state.currentTab);
+            updateXP();
+        }
+
+        function switchTab(tabNum) {
+            state.currentTab = tabNum;
+            
+            // Reset all styles
+            for(let i=1; i<=3; i++) {
+                const tab = document.getElementById(`tab-${i}`);
+                if(tab) {
+                    const div = tab.querySelector('div');
+                    if(div) div.classList.add('grayscale');
+                    tab.classList.remove('bg-orange-500', 'bg-purple-600');
+                    tab.classList.add('bg-gray-800');
+                }
+            }
+
+            // Set active style
+            const activeTab = document.getElementById(`tab-${tabNum}`);
+            if(activeTab) {
+                const div = activeTab.querySelector('div');
+                if(div) div.classList.remove('grayscale');
+                
+                activeTab.classList.remove('bg-gray-800');
+                if(tabNum === 3) {
+                    activeTab.classList.add('bg-purple-600'); 
+                } else {
+                    activeTab.classList.add('bg-orange-500');
+                }
+            }
+
+            renderTasks(tabNum);
+            saveState(); 
+        }
+
+        function renderTasks(levelNum) {
+            const levelKey = `level${levelNum}`;
+            const data = gameData[levelKey];
+            const container = document.getElementById('content-area');
+            
+            if (!data) return;
+
+            // Background image for the section
+            let html = `
+                <div class="rounded-lg border border-gray-700 relative overflow-hidden bg-gray-800">
+                    <div class="absolute inset-0 bg-[url('${data.bg}')] bg-cover bg-center opacity-20"></div>
+                    <div class="relative z-10 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-3xl font-black text-white italic uppercase tactical-font tracking-wider text-shadow">${data.title}</h3>
+                                <p class="text-gray-400 font-mono text-sm border-l-2 border-orange-500 pl-3">${data.desc}</p>
+                            </div>
+                            <i class="fas fa-chess-king text-4xl text-gray-600 opacity-50"></i>
+                        </div>
+                        <div class="grid gap-3">
+            `;
+
+            data.tasks.forEach(task => {
+                const isChecked = state.completed.includes(task.id);
+                const isBoss = task.boss;
+                
+                let cardStyle = isChecked 
+                    ? "bg-green-900/40 border-l-4 border-green-500 opacity-70" 
+                    : isBoss 
+                        ? "bg-red-900/20 border-l-4 border-red-600" 
+                        : "bg-[#151921] border-l-4 border-gray-600";
+                
+                let iconColor = isChecked ? "text-green-500" : isBoss ? "text-red-500" : "text-orange-500";
+
+                html += `
+                    <div onclick="toggleTask('${task.id}')" class="level-card cursor-pointer p-4 flex items-center gap-4 ${cardStyle}">
+                        <div class="w-10 h-10 flex items-center justify-center bg-black/50 rounded border border-gray-700 ${iconColor}">
+                            <i class="fas fa-${isChecked ? 'check' : task.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <h4 class="font-bold text-gray-200 hud-font uppercase tracking-wide ${isChecked ? 'line-through text-gray-500' : ''}">
+                                    ${task.title}
+                                </h4>
+                                <span class="text-xs font-bold px-2 py-1 bg-black rounded text-orange-400 font-mono">+${task.xp} XP</span>
+                            </div>
+                            <p class="text-xs text-gray-400 font-mono ${isChecked ? 'line-through' : ''}">${task.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div></div>`;
+            container.innerHTML = html;
+        }
+
+        function toggleTask(taskId) {
+            const index = state.completed.indexOf(taskId);
+            
+            if (index === -1) {
+                state.completed.push(taskId);
+                
+                // Bomb defuse sound effect (visual)
+                confetti({
+                    particleCount: 150,
+                    spread: 60,
+                    origin: { y: 0.7 },
+                    colors: ['#de9b35', '#ffffff', '#ff0000'],
+                    disableForReducedMotion: true
+                });
+            } else {
+                state.completed.splice(index, 1);
+            }
+            
+            saveState();
+            updateXP();
+            renderTasks(state.currentTab);
+        }
+
+        function updateXP() {
+            let totalXP = 0;
+            const maxXP = 2250; 
+            
+            Object.values(gameData).forEach(level => {
+                level.tasks.forEach(task => {
+                    if(state.completed.includes(task.id)) {
+                        totalXP += task.xp;
+                    }
+                });
+            });
+
+            const percent = Math.min(100, (totalXP / maxXP) * 100);
+            
+            document.getElementById('xp-display').innerText = `${totalXP} / ${maxXP} XP`;
+            document.getElementById('xp-bar').style.width = `${percent}%`;
+        }
+
+    </script>
+</body>
+</html>
