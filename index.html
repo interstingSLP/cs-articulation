@@ -27,6 +27,7 @@
         h1, h2, h3, .tactical-font { font-family: 'Black Ops One', cursive; letter-spacing: 1px; }
         .hud-font { font-family: 'Chakra Petch', sans-serif; }
         
+        /* Level Card Styles */
         .level-card { 
             background: linear-gradient(90deg, rgba(30,35,45,0.9) 0%, rgba(20,25,35,0.8) 100%);
             border-left: 4px solid #333;
@@ -39,23 +40,16 @@
             box-shadow: -5px 0 15px rgba(222, 155, 53, 0.2); 
         }
         
-        .task-checkbox:checked + div {
-            text-decoration: line-through;
-            color: #555;
-        }
-
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0d1116; }
         ::-webkit-scrollbar-thumb { background: var(--cs-orange); }
 
+        /* Scanline Animation */
         .scanline {
-            width: 100%;
-            height: 2px;
-            z-index: 10;
+            width: 100%; height: 2px; z-index: 10;
             background: rgba(222, 155, 53, 0.1);
-            position: absolute;
-            top: 0;
+            position: absolute; top: 0;
             animation: scan 3s linear infinite;
             pointer-events: none;
         }
@@ -80,6 +74,73 @@
         .cs-btn:active {
             transform: translateY(4px);
             box-shadow: 0 0 0 #7a4a0a;
+        }
+        
+        /* Gmail Button Special Style */
+        .gmail-btn {
+            background: linear-gradient(180deg, #D44638 0%, #B23121 100%);
+            border: 1px solid #E57373;
+            box-shadow: 0 4px 0 #8B2515;
+        }
+        .gmail-btn:active {
+            box-shadow: 0 0 0 #8B2515;
+        }
+
+        /* --- MODAL VE TABLO STİLLERİ --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-content {
+            background: #14171f; border: 1px solid #de9b35; width: 95%; max-width: 600px;
+            max-height: 85vh; overflow-y: auto; position: relative;
+            box-shadow: 0 0 50px rgba(222, 155, 53, 0.15);
+            transform: scale(0.95); transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        /* Tablo Tasarımı */
+        .cs-table { width: 100%; border-collapse: collapse; font-family: 'Chakra Petch', sans-serif; }
+        .cs-table th { background: #1f232a; color: #de9b35; padding: 10px; text-align: left; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #de9b35; }
+        .cs-table td { padding: 8px 12px; border-bottom: 1px solid #333; color: #ccc; }
+        .cs-table tr:hover { background: rgba(222, 155, 53, 0.05); }
+
+        /* Puan Inputu */
+        .score-input {
+            background: #0d1116; border: 1px solid #444; color: #fff; width: 60px; text-align: center;
+            padding: 5px; font-weight: bold; border-radius: 4px; transition: all 0.2s;
+        }
+        .score-input:focus { border-color: #de9b35; outline: none; box-shadow: 0 0 10px rgba(222, 155, 53, 0.3); }
+
+        .modal-content::-webkit-scrollbar { width: 8px; }
+        .modal-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+
+        /* --- LEVEL KİLİT STİLLERİ (YENİ) --- */
+        .locked-level {
+            position: relative;
+            cursor: not-allowed !important;
+        }
+        .locked-level .bg-cover {
+            filter: grayscale(100%) brightness(40%) !important;
+        }
+        .locked-level::after {
+            content: "\f023"; /* FontAwesome Lock */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255,255,255,0.3);
+            z-index: 20;
+        }
+        .locked-level:hover::after {
+            color: rgba(222, 155, 53, 0.8);
+            transform: translate(-50%, -50%) scale(1.1);
+            transition: all 0.2s;
         }
     </style>
 </head>
@@ -106,7 +167,7 @@
             <div class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs font-bold text-orange-400 mb-1 tracking-wider uppercase"><i class="fas fa-id-card mr-1"></i> Operatör Adı</label>
-                    <input type="text" id="player-name" class="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:outline-none focus:border-orange-500 transition font-mono" placeholder="Örn: s1mple">
+                    <input type="text" id="player-name" class="w-full bg-gray-900 border border-gray-600 p-3 text-white focus:outline-none focus:border-orange-500 transition font-mono" placeholder="Örn: Ahmet">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-orange-400 mb-1 tracking-wider uppercase"><i class="fas fa-bullseye mr-1"></i> Hedef (Target)</label>
@@ -118,10 +179,6 @@
                 OPERASYONU BAŞLAT <i class="fas fa-angle-double-right ml-2 group-hover:translate-x-1 transition"></i>
             </button>
             
-            <div id="reset-link" class="mt-4 hidden">
-                <button onclick="clearData()" class="text-xs text-gray-500 hover:text-gray-300 underline uppercase tracking-wider">Farklı Hesapla Gir</button>
-            </div>
-
             <!-- İMZA ALANI -->
             <div class="mt-8 border-t border-gray-700 pt-4">
                 <p class="text-[10px] text-gray-500 font-mono tracking-widest uppercase opacity-70">
@@ -138,16 +195,23 @@
         <!-- HUD / Header -->
         <header class="bg-[#1b1f27] border-b border-orange-900/30 sticky top-0 z-40 shadow-lg">
             <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-                <!-- Player Info -->
+                
+                <!-- Player Info & Rank -->
                 <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Counter-Strike_2_logo.svg/1200px-Counter-Strike_2_logo.svg.png" class="w-12 h-12 object-contain drop-shadow-[0_0_5px_rgba(222,155,53,0.8)]">
+                    <div class="relative group">
+                        <!-- KARAKTER RESMİ -->
+                        <img id="rank-img" src="https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/pak01_dir/resource/flash/econ/characters/tm_phoenix_varianta.png" 
+                             class="w-16 h-16 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-all duration-500 group-hover:scale-110">
+                        <!-- Rank Atlama Efekti için Gizli Parlama -->
+                        <div id="rank-glow" class="absolute inset-0 bg-orange-500 rounded-full blur-xl opacity-0 transition-opacity duration-500"></div>
                     </div>
                     <div>
                         <h2 id="display-name" class="font-bold text-xl leading-tight text-white hud-font tracking-wide">OPERATOR</h2>
+                        <!-- RÜTBE İSMİ -->
+                        <div id="rank-name" class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-1">SILVER I</div>
+
                         <div class="flex items-center gap-3 text-xs text-gray-400 font-mono">
                             <span class="bg-gray-800 border border-gray-600 px-2 py-0.5 text-orange-400"><i class="fas fa-crosshairs"></i> HEDEF: /<span id="display-sound">Z</span>/</span>
-                            <span class="text-green-400"><i class="fas fa-signal"></i> ONLINE</span>
                         </div>
                     </div>
                 </div>
@@ -168,37 +232,88 @@
         <!-- Main Content -->
         <main class="max-w-6xl mx-auto px-4 py-8">
             
-            <!-- Map Selection (Tabs) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 justify-center">
+            <!-- Map Selection (Tabs) - 7 HAFTALIK GÖRÜNÜM -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 justify-center">
+                <!-- HAFTA 1 (Her Zaman Açık) -->
                 <button onclick="switchTab(1)" id="tab-1" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
                     <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/inferno/inferno_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
                         <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
                         <div class="relative z-10 text-center">
                             <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 1</div>
-                            <div class="text-2xl font-black text-white italic uppercase tactical-font">SILVER</div>
-                            <div class="text-[10px] text-gray-300 font-mono mt-1">EĞİTİM KAMPI</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">SILVER</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">GAT TABLOLARI</div>
                         </div>
                     </div>
                 </button>
                 
+                <!-- HAFTA 2 -->
                 <button onclick="switchTab(2)" id="tab-2" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
                     <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/dust2/dust2_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
                         <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
                         <div class="relative z-10 text-center">
                             <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 2</div>
-                            <div class="text-2xl font-black text-white italic uppercase tactical-font">GLOBAL</div>
-                            <div class="text-[10px] text-gray-300 font-mono mt-1">OPERASYON</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">GOLD NOVA</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">KELİME OPR.</div>
                         </div>
                     </div>
                 </button>
 
+                <!-- HAFTA 3 -->
                 <button onclick="switchTab(3)" id="tab-3" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
                     <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/mirage/mirage_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
                         <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
                         <div class="relative z-10 text-center">
                             <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 3</div>
-                            <div class="text-2xl font-black text-white italic uppercase tactical-font">FACEIT LVL 10</div>
-                            <div class="text-[10px] text-gray-300 font-mono mt-1">PRO LİG (CÜMLE)</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">MASTER</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">2 HECELİLER</div>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- HAFTA 4 -->
+                <button onclick="switchTab(4)" id="tab-4" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/nuke/nuke_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 4</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">LEGENDARY</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">3+ HECELİLER</div>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- HAFTA 5 -->
+                <button onclick="switchTab(5)" id="tab-5" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/overpass/overpass_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 5</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">SUPREME</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">TAMLAMA/CÜMLE</div>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- HAFTA 6 -->
+                <button onclick="switchTab(6)" id="tab-6" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/vertigo/vertigo_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 6</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">GLOBAL</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">HİKAYE MODU</div>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- HAFTA 7 -->
+                <button onclick="switchTab(7)" id="tab-7" class="bg-gray-800 p-1 transition-all group clip-path-polygon cursor-pointer hover:scale-[1.02]">
+                    <div class="h-full w-full border border-gray-600 p-4 bg-[url('https://cdn.akamai.steamstatic.com/apps/csgo/images/ancient/ancient_1.jpg')] bg-cover bg-center grayscale group-hover:grayscale-0 transition relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/70 group-hover:bg-black/40 transition"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="text-xs text-orange-400 font-bold uppercase tracking-widest mb-1">HAFTA 7</div>
+                            <div class="text-xl font-black text-white italic uppercase tactical-font">ELITE</div>
+                            <div class="text-[10px] text-gray-300 font-mono mt-1">GİZLİ GÖREVLER</div>
                         </div>
                     </div>
                 </button>
@@ -206,7 +321,7 @@
 
             <!-- Content Area -->
             <div id="content-area" class="space-y-4">
-                <!-- Content will be injected by JS -->
+                <!-- Javascript ile doldurulacak -->
             </div>
 
             <!-- Footer / Exit -->
@@ -215,99 +330,238 @@
                     <i class="fas fa-sign-out-alt"></i> Oyundan Çık (Disconnect)
                 </button>
                 
-                <!-- İMZA ALANI -->
                 <div class="pt-6 border-t border-gray-800 opacity-50 hover:opacity-100 transition">
                     <i class="fas fa-shield-alt text-orange-600 mb-2 text-xl"></i>
                     <p class="text-[10px] text-gray-400 font-mono">
-                        HAZIRLAYAN: <span class="text-orange-500 font-bold">stj.dkt.Mehmet Hanefi Bulduk</span><br>
-                        <span class="text-[9px]">COUNTER-TERRORIST UNIT</span>
+                        HAZIRLAYAN VE KONTROL EDENLER: <br> 
+                        <span class="text-orange-500 font-bold">stj.dkt.Mehmet Hanefi Bulduk</span><br>
+                        <span class="text-orange-500 font-bold">stj.dkt.Zeynep Akdağ</span><br>
+                        <span class="text-orange-500 font-bold">stj.dkt.Zeynep Sıla Mutlu</span>
                     </p>
                 </div>
             </div>
-            
             <div class="h-20"></div>
         </main>
     </div>
 
+    <!-- GÖREV TABLOSU MODALI (İNTERAKTİF) -->
+    <div id="mission-modal" class="modal-overlay">
+        <div class="modal-content">
+            <!-- Başlık -->
+            <div class="bg-[#0d1116] p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 z-20">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-clipboard-list text-orange-500 text-xl"></i>
+                    <div>
+                        <h3 id="modal-title" class="text-white font-bold tactical-font text-lg">GÜN 1 RAPORU</h3>
+                        <p class="text-xs text-gray-500 font-mono">Hedefleri 1-5 arası puanla.</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white transition"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+
+            <!-- Tablo Alanı (Dinamik İçerik) -->
+            <div class="p-4" id="modal-body-content">
+                <table class="cs-table">
+                    <thead>
+                        <tr>
+                            <th width="10%">#</th>
+                            <th width="60%">HEDEF KELİME</th>
+                            <th width="30%">PUAN (1-5)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-table-body">
+                        <!-- Javascript ile doldurulacak -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Alt Butonlar -->
+            <div class="p-4 border-t border-gray-700 bg-[#0d1116] flex flex-col md:flex-row justify-end gap-3 sticky bottom-0">
+                <button onclick="closeModal()" class="px-4 py-2 rounded text-xs font-bold text-gray-400 hover:text-white uppercase tracking-wider order-3 md:order-1">İptal</button>
+                
+                <!-- GMAIL BUTONU (En Garantili Yöntem) -->
+                <button onclick="submitMissionReport('gmail')" class="cs-btn gmail-btn px-4 py-2 text-white font-bold text-xs rounded shadow-lg hover:brightness-110 flex items-center justify-center gap-2 order-1 md:order-2">
+                    <i class="fab fa-google"></i> GMAIL İLE GÖNDER
+                </button>
+
+                <!-- VARSAYILAN MAIL UYGULAMASI BUTONU -->
+                <button onclick="submitMissionReport('mailto')" class="cs-btn px-4 py-2 text-white font-bold text-xs rounded shadow-lg hover:brightness-110 flex items-center justify-center gap-2 order-2 md:order-3">
+                    <i class="fas fa-envelope"></i> UYGULAMA İLE GÖNDER
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- DATA STRUCTURE ---
+        // --- DATA STRUCTURES ---
+        
+        // 1. GAT Tablo Verileri (Listeler)
+        const gatData = {
+            // HAFTA 1 (Ses ve Tek Hece)
+            day1: ["zo", "zu", "zö", "z", "za", "ze", "z", "zı", "z", "zi", "z", "zzzz", "zü", "zo", "zö", "zu", "zzzz"],
+            day2: ["ız", "z", "uz", "az", "üz", "zzzz", "ez", "iz", "oz", "öz", "uz", "ız", "oz", "ez", "az", "öz", "üz"],
+            day3: ["izi", "aza", "uzu", "eze", "üzü", "ozo", "özö", "z", "eze", "izi", "aza", "üzü", "özö", "ozo", "uzu", "z", "üzü"],
+            day4: ["z", "izi", "uz", "ozo", "zu", "ez", "izi", "aza", "uzu", "aza", "özö", "eze", "ızı", "öz", "uz", "üzü", "özö"],
+            day5: ["uz", "z", "üzü", "oz", "zo", "aza", "ız", "üzü", "özö", "zu", "ze", "ızı", "uz", "oz", "eze", "iz", "zü"],
+            
+            // HAFTA 2
+            w2_day1: ["zaz", "zuz", "ziz", "zez", "züz", "zız", "zoz", "zaz", "zuz", "zöz", "zız", "züz", "zoz", "zöz", "zöz", "zez", "ziz", "zuz"],
+            w2_day2: ["zızı", "zozo", "zeze", "züzü", "zuzu", "zaza", "zizi", "zözö", "zuzu", "zeze", "zizi", "zozo", "zuzu", "zaza", "zizi", "zözö", "zuzu", "zozo"],
+            w2_day3: ["zor", "zift", "boz", "buz", "çöz", "doz", "zor", "zift", "boz", "buz", "çöz", "doz", "zor", "zift", "boz", "buz", "çöz", "doz"],
+            w2_day4: ["toz", "güz", "muz", "koz", "göz", "köz", "toz", "güz", "muz", "koz", "göz", "köz", "toz", "güz", "muz", "koz", "göz", "köz"],
+            w2_day5: ["saz", "siz", "sos", "söz", "zis", "zös", "saz", "siz", "sos", "söz", "zis", "zös", "saz", "siz", "sos", "söz", "zis", "zös"],
+
+            // HAFTA 3
+            w3_day1: ["zeki", "zaman", "zımba", "zincir", "zurna", "zombi", "zeki", "zaman", "zımba", "zincir", "zurna", "zombi", "zeki", "zaman", "zımba", "zincir", "zurna", "zombi"],
+            w3_day2: ["kazak", "gözlük", "yüzük", "uzay", "vazo", "cüzdan", "kazak", "gözlük", "yüzük", "uzay", "vazo", "cüzdan", "kazak", "gözlük", "yüzük", "uzay", "vazo", "cüzdan"],
+            w3_day3: ["üzüm", "kuzu", "uzun", "çizme", "müzik", "füze", "üzüm", "kuzu", "uzun", "çizme", "müzik", "füze", "üzüm", "kuzu", "uzun", "çizme", "müzik", "füze"],
+            w3_day4: ["ceviz", "kiraz", "ağız", "domuz", "gündüz", "horoz", "ceviz", "kiraz", "ağız", "domuz", "gündüz", "horoz", "ceviz", "kiraz", "ağız", "domuz", "gündüz", "horoz"],
+            w3_day5: ["sakız", "gazoz", "süzgeç", "sekiz", "hırsız", "çözüm", "sakız", "gazoz", "süzgeç", "sekiz", "hırsız", "çözüm", "sakız", "gazoz", "süzgeç", "sekiz", "hırsız", "çözüm"],
+
+            // HAFTA 4
+            w4_day1: ["ziyafet", "zencefil", "zavallı", "zonguldak", "zahmetli", "zelzele", "ziyafet", "zencefil", "zavallı", "zonguldak", "zahmetli", "zelzele", "ziyafet", "zencefil", "zavallı", "zonguldak", "zahmetli", "zelzele"],
+            w4_day2: ["yüzücü", "uzunluk", "kozalak", "mızıka", "bilezik", "düzine", "yüzücü", "uzunluk", "kozalak", "mızıka", "bilezik", "düzine", "yüzücü", "uzunluk", "kozalak", "mızıka", "bilezik", "düzine"],
+            w4_day3: ["maydanoz", "hokkabaz", "kavanoz", "hilebaz", "kılavuz", "tarafsız", "maydanoz", "hokkabaz", "kavanoz", "hilebaz", "kılavuz", "tarafsız", "maydanoz", "hokkabaz", "kavanoz", "hilebaz", "kılavuz", "tarafsız"],
+            w4_day4: ["sızlamak", "sözlüksüz", "süzgeçsiz", "ondokuz", "hazine", "dinazor", "sızlamak", "sözlüksüz", "süzgeçsiz", "ondokuz", "hazine", "dinazor", "sızlamak", "sözlüksüz", "süzgeçsiz", "ondokuz", "hazine", "dinazor"],
+            w4_day5: ["olumsuz", "onsekiz", "çaresiz", "zamansız", "görgüsüz", "engelsiz", "olumsuz", "onsekiz", "çaresiz", "zamansız", "görgüsüz", "engelsiz", "olumsuz", "onsekiz", "çaresiz", "zamansız", "görgüsüz", "engelsiz"],
+
+            // HAFTA 5 (Tamlamalar - Shuffle)
+            w5_day1: ["zeki zeynep", "zonguldaklı sıla", "zor zaman", "zincirli zindan", "zımbalı zıbın", "zam zamanı"],
+            w5_day2: ["düz yazı", "hızlı terzi", "uzun çizme", "bozuk saat", "siyah kazak", "müze gezisi"],
+            w5_day3: ["taze sebze", "düzenli valiz", "güzel bilezik", "kızın mızıkası", "kuzunun gözü", "bezelye kavanozu"],
+            w5_day4: ["zafer zıpzıp zıpladı", "zeynep zaman zaman zırvalar", "zeytinyağlı zencefil zararsızdır", "zeynep ve sıla zekidir", "zeytini zehirli zannettim", "zengin ziyaretçiyi zeki zannettim"],
+            w5_day5: ["Özge'nin kuzeni müzisyendi", "hızlı yüzücü havuzda yüzdü", "yazın hepmiz denizde eğleniriz", "pazarları teyzemle zeytinli pizza pişiririz", "kırmızı kazaklı kız bazı zamanlar yalnız geziyor", "zafer izlediği yazarın gazetedeki yazılarını özetledi"]
+        };
+
+        // HAFTA 6 VERİLERİ (HİKAYELER)
+        const w6_stories = {
+            w6_day1: "Zeki, her sabah erkenden zıplayarak yataktan kalkardı. Eski zamanlardan kalma zincirli saatine bakıp dükkanına giderdi. Bir gün kumaşların arasında zümrüt taşlı bir yüzük buldu. Bu yüzük, ziyaretçilerinden birine ait olmalıydı. Zeki, yüzüğü zarif bir kutuya koyup masanın üzerine dizdi. O sırada kapının zili acı acı çalmaya başladı. İçeriye zayıf, gözlüklü bir teyze girdi. Kadın, üzgün bir şekilde kaybettiği yadigârını arıyordu. Zeki yüzüğü ona uzatınca kadının yüzünde kocaman bir tebessüm belirdi. Bu iyiliği karşılığında Zeki’ye taze zerdeçallı kurabiyeler getireceğine söz verdi.",
+            w6_day2: "Zürafa Zuzu, ormanın en uzun ve en nazik hayvanıydı. Her akşam yıldızları izlemek için tepeye çıkar, zifiri karanlığın çökmesini beklerdi. Bir gece gökyüzünde parlak bir iz gördü. Bu bir yıldız kaymasıydı ama sanki yeryüzüne çok yakındı. Zuzu, hızla ormanın derinliklerine doğru koşmaya başladı. Yol boyunca zebra arkadaşı Zıpzıp ile karşılaştı. Birlikte sazlıkların arasından geçip ışığın düştüğü yere vardılar. Orada zıp zıp zıplayan küçük bir ateş böceği sürüsü buldular. Meğer gökyüzünde gördükleri o muazzam ışık, bu binlerce sevimli ateş böceğinin dansıymış.",
+            w6_day3: "Zaza, deniz kenarında yürürken kumların arasında parlayan eski bir zincir fark etti. Merakla eğilip zinciri kumdan çıkardı. Zinciri takip edince ucu kayaların arasına sıkışmış dev bir sandığa ulaştı. Sandığın içinde eski bozuk paralar ve yaldızlı aynalar vardı. Zaza, bu hazineyi şehrin müzesine taşımaya karar verdi. Arkadaşı Deniz Yıldızı ile birlikte sandığı zorla yukarı çıkardılar. Artık şehrin en ilgi çekici köşesi, Zaza'nın bulduğu bu müze olmuştu.",
+            w6_day4: "Uzaylı Zort, turuncu renkli hızlı bir gemiye sahipti. Bir gün rotasını şaşırıp Dünya’ya, Rize yakınlarına iniş yaptı. Gemisinden indiğinde etrafındaki her şeyin yeşil olmasına çok şaşırdı. Hemen bir zeytin ağacının altına oturup dinlenmeye başladı. Yanına minik bir kız çocuğu yaklaşıp ona bir dilim karpuz uzattı. Zort, meyvenin tadına bakınca leziz olduğunu anlayıp çok mutlu oldu. Çocuğa kendi gezegeninden getirdiği mıknatıslı bir oyuncak hediye etti. Gökyüzü kararmaya başlayınca gemisine binip uzaydaki evine doğru yola çıktı. Dünya’daki bu kısa geziyi asla unutmayacaktı.",
+            w6_day5: "Zeze, evde yalnız kalınca en sevdiği yapbozunu masaya serdi. Yapbozda binlerce yıldız ve uzay gemisi resmi vardı. Ancak tam ortadaki en önemli parça kayıptı. Zeze, koltukların altına, vazonun içine ve gazetelerin arasına baktı. Tam vazgeçecekken köpeği Zeytin ağzında bir parçayla yanına geldi. Meğer yaramaz Zeytin, yapboz parçasını kemik zannedip saklamış. Zeze gülerek parçayı aldı ve tablosunu tamamladı. O gün Zeze için biraz zorlu ama eğlenceli geçmişti."
+        };
+
+        // HAFTA 7 VERİLERİ (ETKİNLİKLER)
+        const w7_activities = {
+            w7_day1: "BİLMECE ZAMANI: Aile üyelerine içinde 'Z' sesi geçen bilmeceler sor veya onların sorduğu bilmeceleri çöz. (Örnek: Çarşıdan aldım bir tane, eve geldim bin tane? Cevap: Nar. Senin cevabın: 'Kiraz' veya 'Üzüm' gibi Z'li meyveler de olabilir!)",
+            w7_day2: "TEKERLEME YARIŞI: Şu tekerlemeyi en az 3 kez hatasız ve hızlı söylemeye çalış: 'Bu yoğurdu sarımsaklasak da mı saklasak, sarımsaklamasak da mı saklasak?' ya da 'Zengin Ziya, zırhlı zırhını zorla zırhladı.'",
+            w7_day3: "BEN KİMİM OYUNU: Aklından Z sesi içeren bir meslek tut (Yazar, Terzi, Yüzücü, Müzisyen). Özelliklerini anlat, karşındakiler bulsun. Sonra sen onların tuttuğunu bul.",
+            w7_day4: "RESİM BETİMLEME: Bir kağıda hayalindeki 'Uzay' veya 'Hayvanat Bahçesi' resmini çiz. İçinde Z sesi geçen en az 5 nesne olsun (Yıldız, Gezegen, Zebra, Zürafa...). Resmini ailene anlat.",
+            w7_day5: "Z AVCISI: Etrafına bak veya aklından 'Z' sesi içeren kelimeler bul. Örnek: Zebra, Zil, Muz, Yıldız, Gözlük... Bulduğun kelimeleri say ve aşağıya kaç tane bulduğunu yaz!"
+        };
+
+        // 2. Rütbe Verileri
+        const rankData = [
+            { min: 0,    name: "SILVER I",       img: "https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/pak01_dir/resource/flash/econ/characters/tm_phoenix_varianta.png" },
+            { min: 500,  name: "GOLD NOVA",      img: "https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/pak01_dir/resource/flash/econ/characters/ctm_sas_variantf.png" },
+            { min: 1000, name: "MASTER GUARDIAN",img: "https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/pak01_dir/resource/flash/econ/characters/tm_balkan_varianth.png" },
+            { min: 1800, name: "GLOBAL ELITE",   img: "https://raw.githubusercontent.com/SteamDatabase/GameTracking-CSGO/master/csgo/pak01_dir/resource/flash/econ/characters/ctm_swat_variante.png" }
+        ];
+
+        // 3. Oyun/Seviye Verileri
         const gameData = {
             level1: {
-                title: "SILVER RANK: EĞİTİM KAMPI",
-                desc: "Temel atış talimleri ve telsiz kodları (Hece & Tek Heceli).",
+                title: "HAFTA 1: TEMEL SESLER",
+                desc: "Hafta 1: Günlük ses ve hece tablolarını tamamla.",
                 color: "gray",
                 bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/inferno/inferno_1.jpg",
                 tasks: [
-                    { id: "l1d1", title: "Round 1: Silah Sesi Testi", desc: "Susturucuyu tak. Hedef sesini tek başına 5 saniye uzat (İzolasyon). 10 kez tekrarla.", xp: 100, icon: "volume-up" },
-                    { id: "l1d2", title: "Round 2: Telsiz Kodları", desc: "Takıma seslen: ZA-ZE-ZI-ZO-ZU. Her kodu 5 kez tekrarla.", xp: 100, icon: "walkie-talkie" },
-                    { id: "l1d3", title: "Round 3: Ters Köşe (Reverse)", desc: "Düşman arkada! Kodları ters çevir: AZ-EZ-IZ-OZ. Hedef sesi sonda patlat.", xp: 100, icon: "undo" },
-                    { id: "l1d4", title: "Round 4: Envanter Kontrolü", desc: "Çantasında hedef ses olan 5 eşya (Tek Heceli) bul ve 3 kez söyle.", xp: 100, icon: "box-open" },
-                    { id: "l1d5", title: "Round 5: Replay İzleme", desc: "Sesini kaydet ve dinle. Hatan var mı? Kendi oyununu analiz et.", xp: 100, icon: "headphones" },
-                    { id: "l1d6", title: "Round 6: Crossfire (Sandviç)", desc: "Sesi hem başa hem sona koy (Örn: ZOZ). İki ateş arasında kalma. 5 kelime.", xp: 100, icon: "exchange-alt" },
-                    { id: "l1d7", title: "CLUTCH ANI: Ace Atmak", desc: "Duraksamadan 5 kelimeyi arka arkaya söyle. Roundu kazan.", xp: 150, boss: true, icon: "trophy" }
+                    { id: "day1", title: "GÜN 1: Temel Sesler", desc: "Z sesi içeren heceleri puanla. (GAT Tablosu)", xp: 200, icon: "calendar-day" },
+                    { id: "day2", title: "GÜN 2: Ters Heceler", desc: "Sessiz harf + Z kombinasyonları.", xp: 200, icon: "calendar-day" },
+                    { id: "day3", title: "GÜN 3: Üçlü Kombinasyon", desc: "İki ünlü arası Z sesi çalışmaları.", xp: 200, icon: "calendar-day" },
+                    { id: "day4", title: "GÜN 4: Karışık Atış", desc: "Hızlandırılmış karışık tekrar.", xp: 200, icon: "calendar-check" },
+                    { id: "day5", title: "GÜN 5: Final Sınavı", desc: "Haftanın özeti ve seri okuma.", xp: 350, boss: true, icon: "flag-checkered" }
                 ]
             },
             level2: {
-                title: "GLOBAL ELITE: OPERASYON",
-                desc: "İleri düzey taktikler (2 Heceli Kelimeler).",
+                title: "HAFTA 2: KELİME OPERASYONU",
+                desc: "Hafta 2: Kapalı hece ve iki heceli kelime çalışmaları.",
                 color: "orange",
                 bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/dust2/dust2_1.jpg",
                 tasks: [
-                    { id: "l2d1", title: "Round 1: Spawn Noktası", desc: "Hedef sesin BAŞTA olduğu 5 kelime (2 heceli). Oyuna güçlü başla (Vurgulu).", xp: 100, icon: "map-marker-alt" },
-                    { id: "l2d2", title: "Round 2: Bot Taklidi", desc: "Kelimeleri Bot gibi hece hece söyle (ZAM...BAK). Arada 1 saniye bekle.", xp: 100, icon: "robot" },
-                    { id: "l2d3", title: "Round 3: Extraction (Çıkış)", desc: "Hedef sesin SONDA olduğu 5 kelime bul (Örn: CEVİZ). Sesi yutmadan bölgeyi terk et.", xp: 100, icon: "door-open" },
-                    { id: "l2d4", title: "Round 4: Wallhack Kontrolü", desc: "Partnerin yanlış okusun (Hile yapsın). Yanlışı duyunca 'BAN!' diye bağır ve masaya vur.", xp: 100, icon: "ban" },
-                    { id: "l2d5", title: "Round 5: Mid Kapışması", desc: "Hedef sesin tam ORTADA olduğu kelimeler (Örn: UZAY). Mid'i kontrol et.", xp: 100, icon: "arrows-alt-h" },
-                    { id: "l2d6", title: "Round 6: Double Kill", desc: "Her kelimeyi 2 kez peş peşe söyle: 'ZANLI-ZANLI'. Spray atar gibi seri ol.", xp: 100, icon: "clone" },
-                    { id: "l2d7", title: "MVP MOMENT: Karışık Liste", desc: "Baş-orta-son karışık liste yap. Rastgele çek ve hatasız oku. MVP ol.", xp: 150, boss: true, icon: "medal" }
+                    { id: "w2_day1", title: "GÜN 1: Kapalı Heceler (ZAZ-ZUZ)", desc: "Sessiz harfle başlayan ve biten Z sesleri.", xp: 200, icon: "cube" },
+                    { id: "w2_day2", title: "GÜN 2: İki Heceli (ZIZI-ZOZO)", desc: "Tekrar eden hecelerle ısınma.", xp: 200, icon: "clone" },
+                    { id: "w2_day3", title: "GÜN 3: Tek Heceli (ZOR-ZIFT)", desc: "Zorlu tek heceli kelimeler.", xp: 200, icon: "bolt" },
+                    { id: "w2_day4", title: "GÜN 4: Sonu Z Olan (TOZ-GÜZ)", desc: "Kelime sonundaki Z sesine odaklan.", xp: 200, icon: "bullseye" },
+                    { id: "w2_day5", title: "GÜN 5: Karışık Liste (SAZ-SIZ)", desc: "Haftanın genel tekrarı.", xp: 350, boss: true, icon: "star" }
                 ]
             },
             level3: {
-                title: "FACEIT LEVEL 10: PRO LİG",
-                desc: "Taşıyıcı ifadeler ve Cümle Düzeyinde Hakimiyet.",
+                title: "HAFTA 3: KELİME AVCISI",
+                desc: "Hafta 3: 2 heceli kelimeler ve pozisyon çalışmaları.",
                 color: "purple",
                 bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/mirage/mirage_1.jpg",
                 tasks: [
-                    { id: "l3d1", title: "Round 1: Inventory (Envanter)", desc: "Taşıyıcı İfade: 'Benim bir [KELİMEM] var.' kalıbını 5 farklı kelimeyle kullan.", xp: 100, icon: "briefcase" },
-                    { id: "l3d2", title: "Round 2: Spotting (İnfo)", desc: "Taşıyıcı İfade: 'Bu bir [KELİME].' Resimleri göstererek takıma bilgi ver.", xp: 100, icon: "eye" },
-                    { id: "l3d3", title: "Round 3: Entry Frag (Giriş)", desc: "Cümlen hedef kelimeyle başlasın. 'ZAMBAK çok güzel kokar.' gibi 5 cümle kur.", xp: 100, icon: "door-open" },
-                    { id: "l3d4", title: "Round 4: Defuse Kit (Son)", desc: "Cümlen hedef kelimeyle bitsin. 'Bahçede bir KAZ.' gibi 5 cümle kur.", xp: 100, icon: "bomb" },
-                    { id: "l3d5", title: "Round 5: Mid Control (Orta)", desc: "Hedef kelime cümlenin ortasında geçsin. 'Annem ÜZÜM aldı.' gibi 5 cümle.", xp: 100, icon: "bullseye" },
-                    { id: "l3d6", title: "Round 6: Rotation (Dönme)", desc: "Bir kelimeyle 3 farklı cümle kur (Başta, ortada, sonda). Taktik değiştir.", xp: 100, icon: "sync-alt" },
-                    { id: "l3d7", title: "GRAND FINAL: Hikaye Modu", desc: "En az 3 hedef kelime kullanarak kısa bir olay anlat. Maçı kazandır.", xp: 150, boss: true, icon: "crown" }
+                    { id: "w3_day1", title: "GÜN 1: Kelime Başı (ZEKİ-ZAMAN)", desc: "Z sesi kelime başında.", xp: 200, icon: "font" },
+                    { id: "w3_day2", title: "GÜN 2: Kelime Ortası (KAZAK-GÖZLÜK)", desc: "Z sesi ortada gizlenmiş.", xp: 200, icon: "align-center" },
+                    { id: "w3_day3", title: "GÜN 3: Ortada Devam (ÜZÜM-KUZU)", desc: "Farklı ünlü kombinasyonları.", xp: 200, icon: "align-justify" },
+                    { id: "w3_day4", title: "GÜN 4: Kelime Sonu (CEVİZ-KİRAZ)", desc: "Z sesi kelimenin sonunda.", xp: 200, icon: "align-right" },
+                    { id: "w3_day5", title: "GÜN 5: Karışık (SAKIZ-GAZOZ)", desc: "Haftanın özeti ve seri okuma.", xp: 350, boss: true, icon: "medal" }
+                ]
+            },
+            level4: {
+                title: "HAFTA 4: ZORLU GÖREV",
+                desc: "Hafta 4: 3+ Heceli ve zorlu kelimeler.",
+                color: "blue",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/nuke/nuke_1.jpg",
+                tasks: [
+                    { id: "w4_day1", title: "GÜN 1: Uzun Başlangıç (ZİYAFET)", desc: "3 heceli kelimeler (Başta Z).", xp: 250, icon: "layer-group" },
+                    { id: "w4_day2", title: "GÜN 2: Uzun Orta (YÜZÜCÜ)", desc: "3 heceli kelimeler (Ortada Z).", xp: 250, icon: "layer-group" },
+                    { id: "w4_day3", title: "GÜN 3: Uzun Son (MAYDANOZ)", desc: "3 heceli kelimeler (Sonda Z).", xp: 250, icon: "layer-group" },
+                    { id: "w4_day4", title: "GÜN 4: Dört Heceli (SIZLAMAK)", desc: "Zorluk seviyesi artıyor.", xp: 250, icon: "cubes" },
+                    { id: "w4_day5", title: "GÜN 5: Profesyonel (OLUMSUZ)", desc: "En zor kelimelerle final.", xp: 400, boss: true, icon: "trophy" }
+                ]
+            },
+            level5: {
+                title: "HAFTA 5: CÜMLE OPERASYONU",
+                desc: "Hafta 5: İkili tamlamalar ve cümle kurma çalışmaları.",
+                color: "green",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/overpass/overpass_1.jpg",
+                tasks: [
+                    { id: "w5_day1", title: "GÜN 1: İkili Tamlamalar (ZEKİ ZEYNEP)", desc: "Z sesli ikili sözcük grupları.", xp: 300, icon: "quote-left" },
+                    { id: "w5_day2", title: "GÜN 2: İkili Tamlamalar 2 (DÜZ YAZI)", desc: "Farklı pozisyonlarda Z sesi.", xp: 300, icon: "quote-right" },
+                    { id: "w5_day3", title: "GÜN 3: Üçlü Tamlamalar (TAZE SEBZE)", desc: "Daha uzun sözcük grupları.", xp: 300, icon: "align-left" },
+                    { id: "w5_day4", title: "GÜN 4: Basit Cümleler (ZAFER ZIPLADI)", desc: "Z sesli kısa cümleler.", xp: 300, icon: "comment-dots" },
+                    { id: "w5_day5", title: "GÜN 5: Uzun Cümleler", desc: "Zorlu ve uzun cümle çalışmaları.", xp: 500, boss: true, icon: "comments" }
+                ]
+            },
+            level6: {
+                title: "HAFTA 6: HİKAYE MODU",
+                desc: "Hafta 6: Z sesi içeren özel hikayeleri oku.",
+                color: "red",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/vertigo/vertigo_1.jpg",
+                tasks: [
+                    { id: "w6_day1", title: "GÜN 1: Terzi Zeki", desc: "Zeki'nin yüzük macerası.", xp: 400, icon: "book-open" },
+                    { id: "w6_day2", title: "GÜN 2: Zürafa Zuzu", desc: "Gökyüzü gezisi hikayesi.", xp: 400, icon: "book-open" },
+                    { id: "w6_day3", title: "GÜN 3: Zaza ve Hazine", desc: "Deniz kenarında bir macera.", xp: 400, icon: "book-open" },
+                    { id: "w6_day4", title: "GÜN 4: Uzaylı Zort", desc: "Dünya ziyareti hikayesi.", xp: 400, icon: "book-open" },
+                    { id: "w6_day5", title: "GÜN 5: Yaramaz Zeze", desc: "Kayıp yapboz parçası.", xp: 600, boss: true, icon: "book-reader" }
+                ]
+            },
+            level7: {
+                title: "HAFTA 7: GİZLİ GÖREVLER",
+                desc: "Hafta 7: Günlük hayatta Z sesini kullan.",
+                color: "teal",
+                bg: "https://cdn.akamai.steamstatic.com/apps/csgo/images/ancient/ancient_1.jpg",
+                tasks: [
+                    { id: "w7_day1", title: "GÜN 1: Bilmece Ajanı", desc: "Z'li bilmeceler sor ve çöz.", xp: 500, icon: "user-secret" },
+                    { id: "w7_day2", title: "GÜN 2: Tekerleme Ustası", desc: "Hızlı ve doğru söyle.", xp: 500, icon: "microphone-alt" },
+                    { id: "w7_day3", title: "GÜN 3: Ben Kimim?", desc: "Meslekleri tanıtma oyunu.", xp: 500, icon: "id-badge" },
+                    { id: "w7_day4", title: "GÜN 4: Resim Çiz & Anlat", desc: "Zengin bir resim betimle.", xp: 500, icon: "paint-brush" },
+                    { id: "w7_day5", title: "GÜN 5: Z Avcısı", desc: "Çevrendeki Z sesli kelimeleri bul!", xp: 750, boss: true, icon: "search" }
                 ]
             }
         };
 
-        // --- SAFE STORAGE WRAPPER ---
-        // Prevents crashes if localStorage is disabled/restricted
+        // --- STORAGE & STATE ---
         const Storage = {
-            get: (key) => {
-                try {
-                    return localStorage.getItem(key);
-                } catch (e) {
-                    console.warn("Storage access denied/failed", e);
-                    return null;
-                }
-            },
-            set: (key, val) => {
-                try {
-                    localStorage.setItem(key, val);
-                } catch (e) {
-                    console.warn("Storage access denied/failed", e);
-                }
-            },
-            remove: (key) => {
-                try {
-                    localStorage.removeItem(key);
-                } catch (e) {
-                    console.warn("Storage access denied/failed", e);
-                }
-            }
+            get: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
+            set: (key, val) => { try { localStorage.setItem(key, val); } catch (e) { } },
+            remove: (key) => { try { localStorage.removeItem(key); } catch (e) { } }
         };
 
-        // --- STATE MANAGEMENT ---
         let state = {
             name: "",
             sound: "",
@@ -315,37 +569,32 @@
             currentTab: 1
         };
 
+        let currentActiveDay = null; // Hangi günün tablosu açık?
+
         // --- INIT ---
         window.onload = function() {
             loadState();
             if(state.name) {
                 showDashboard();
             } else {
-                document.getElementById('reset-link').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
             }
         };
 
         function loadState() {
-            const saved = Storage.get('cs_artik_state');
+            const saved = Storage.get('cs_artik_state_v2');
             if(saved) {
-                try { state = JSON.parse(saved); } catch(e) { Storage.remove('cs_artik_state'); }
+                try { state = JSON.parse(saved); } catch(e) { }
             }
         }
 
         function saveState() {
-            Storage.set('cs_artik_state', JSON.stringify(state));
-        }
-
-        function clearData() {
-            if(confirm("Hesap verileri silinecek. Emin misin?")) {
-                Storage.remove('cs_artik_state');
-                location.reload();
-            }
+            Storage.set('cs_artik_state_v2', JSON.stringify(state));
         }
 
         function resetProgress() {
             if(confirm("Oyundan çıkmak ve rankını sıfırlamak istiyor musun?")) {
-                Storage.remove('cs_artik_state');
+                Storage.remove('cs_artik_state_v2');
                 location.reload();
             }
         }
@@ -363,7 +612,6 @@
             state.name = nameInput;
             state.sound = soundInput || "Z";
             
-            // Try to save, but continue even if it fails
             saveState();
             showDashboard();
         }
@@ -375,37 +623,72 @@
             document.getElementById('display-name').innerText = state.name;
             document.getElementById('display-sound').innerText = state.sound;
 
-            // Ensure the tab view is updated immediately
             switchTab(state.currentTab);
             updateXP();
         }
 
+        // --- LEVEL CHECK HELPER ---
+        function isLevelComplete(levelNum) {
+            const levelKey = `level${levelNum}`;
+            const levelData = gameData[levelKey];
+            if (!levelData) return false;
+
+            // Seviyedeki tüm görevlerin ID'leri tamamlananlar listesinde var mı?
+            return levelData.tasks.every(task => state.completed.includes(task.id));
+        }
+
+        function updateTabVisuals() {
+            for(let i=2; i<=7; i++) { // 1. seviye her zaman açık
+                const tab = document.getElementById(`tab-${i}`);
+                if (!tab) continue;
+
+                // Bir önceki seviye tamamlandı mı?
+                const isUnlocked = isLevelComplete(i - 1);
+                
+                if (isUnlocked) {
+                    tab.classList.remove('locked-level');
+                } else {
+                    tab.classList.add('locked-level');
+                }
+            }
+        }
+
         function switchTab(tabNum) {
+            // KİLİT KONTROLÜ
+            if (tabNum > 1) {
+                // Bir önceki seviye tamamlandı mı?
+                if (!isLevelComplete(tabNum - 1)) {
+                    // Uyarı ver
+                    alert(`ERİŞİM REDDEDİLDİ! ⛔\nBu operasyona geçmek için önce ${tabNum - 1}. Haftadaki TÜM görevleri tamamlamalısın!`);
+                    return; // Fonksiyondan çık, geçiş yapma
+                }
+            }
+
             state.currentTab = tabNum;
             
-            // Reset all styles
-            for(let i=1; i<=3; i++) {
+            // Tab stilleri
+            for(let i=1; i<=7; i++) {
                 const tab = document.getElementById(`tab-${i}`);
                 if(tab) {
                     const div = tab.querySelector('div');
                     if(div) div.classList.add('grayscale');
-                    tab.classList.remove('bg-orange-500', 'bg-purple-600');
+                    tab.classList.remove('bg-orange-500', 'bg-purple-600', 'bg-blue-600', 'bg-green-600', 'bg-red-600', 'bg-teal-600');
                     tab.classList.add('bg-gray-800');
                 }
             }
 
-            // Set active style
             const activeTab = document.getElementById(`tab-${tabNum}`);
             if(activeTab) {
                 const div = activeTab.querySelector('div');
                 if(div) div.classList.remove('grayscale');
                 
                 activeTab.classList.remove('bg-gray-800');
-                if(tabNum === 3) {
-                    activeTab.classList.add('bg-purple-600'); 
-                } else {
-                    activeTab.classList.add('bg-orange-500');
-                }
+                // Renklendirme mantığı
+                if(tabNum === 1 || tabNum === 2) activeTab.classList.add('bg-orange-500');
+                else if(tabNum === 3 || tabNum === 4) activeTab.classList.add('bg-purple-600'); 
+                else if(tabNum === 5) activeTab.classList.add('bg-green-600');
+                else if(tabNum === 6) activeTab.classList.add('bg-red-600');
+                else activeTab.classList.add('bg-teal-600');
             }
 
             renderTasks(tabNum);
@@ -419,7 +702,6 @@
             
             if (!data) return;
 
-            // Background image for the section
             let html = `
                 <div class="rounded-lg border border-gray-700 relative overflow-hidden bg-gray-800">
                     <div class="absolute inset-0 bg-[url('${data.bg}')] bg-cover bg-center opacity-20"></div>
@@ -437,17 +719,21 @@
             data.tasks.forEach(task => {
                 const isChecked = state.completed.includes(task.id);
                 const isBoss = task.boss;
+                const isLocked = task.id === "locked";
                 
                 let cardStyle = isChecked 
                     ? "bg-green-900/40 border-l-4 border-green-500 opacity-70" 
                     : isBoss 
                         ? "bg-red-900/20 border-l-4 border-red-600" 
-                        : "bg-[#151921] border-l-4 border-gray-600";
+                        : isLocked
+                            ? "bg-gray-900 border-l-4 border-gray-700 opacity-50 cursor-not-allowed"
+                            : "bg-[#151921] border-l-4 border-gray-600";
                 
-                let iconColor = isChecked ? "text-green-500" : isBoss ? "text-red-500" : "text-orange-500";
+                let iconColor = isChecked ? "text-green-500" : isBoss ? "text-red-500" : isLocked ? "text-gray-600" : "text-orange-500";
+                let clickAction = isLocked ? "" : `onclick="toggleTask('${task.id}')"`;
 
                 html += `
-                    <div onclick="toggleTask('${task.id}')" class="level-card cursor-pointer p-4 flex items-center gap-4 ${cardStyle}">
+                    <div ${clickAction} class="level-card ${isLocked ? '' : 'cursor-pointer'} p-4 flex items-center gap-4 ${cardStyle}">
                         <div class="w-10 h-10 flex items-center justify-center bg-black/50 rounded border border-gray-700 ${iconColor}">
                             <i class="fas fa-${isChecked ? 'check' : task.icon}"></i>
                         </div>
@@ -468,17 +754,24 @@
             container.innerHTML = html;
         }
 
+        // --- TASK & MODAL ACTION ---
         function toggleTask(taskId) {
+            // Eğer GAT Tablosu veya Yeni Haftalar (W6, W7) ise Modal aç
+            if(gatData[taskId] || w6_stories[taskId] || w7_activities[taskId]) {
+                openModal(taskId);
+            } else {
+                // Normal görev ise direkt işaretle
+                handleTaskCompletion(taskId);
+            }
+        }
+
+        function handleTaskCompletion(taskId) {
             const index = state.completed.indexOf(taskId);
             
             if (index === -1) {
                 state.completed.push(taskId);
-                
-                // Bomb defuse sound effect (visual)
                 confetti({
-                    particleCount: 150,
-                    spread: 60,
-                    origin: { y: 0.7 },
+                    particleCount: 150, spread: 60, origin: { y: 0.7 },
                     colors: ['#de9b35', '#ffffff', '#ff0000'],
                     disableForReducedMotion: true
                 });
@@ -493,7 +786,7 @@
 
         function updateXP() {
             let totalXP = 0;
-            const maxXP = 2250; 
+            const maxXP = 8000; // Hafta 6 ve 7 eklendiği için max XP arttırıldı
             
             Object.values(gameData).forEach(level => {
                 level.tasks.forEach(task => {
@@ -504,9 +797,260 @@
             });
 
             const percent = Math.min(100, (totalXP / maxXP) * 100);
-            
             document.getElementById('xp-display').innerText = `${totalXP} / ${maxXP} XP`;
             document.getElementById('xp-bar').style.width = `${percent}%`;
+
+            // Rütbe Kontrolü
+            let currentRank = rankData[0];
+            for (let i = rankData.length - 1; i >= 0; i--) {
+                if (totalXP >= rankData[i].min) {
+                    currentRank = rankData[i];
+                    break;
+                }
+            }
+
+            const rankImg = document.getElementById('rank-img');
+            const rankName = document.getElementById('rank-name');
+
+            if (rankName.innerText !== currentRank.name) {
+                rankName.innerText = currentRank.name;
+                rankImg.src = currentRank.img;
+                const glow = document.getElementById('rank-glow');
+                glow.classList.remove('opacity-0');
+                setTimeout(() => glow.classList.add('opacity-0'), 1000);
+            }
+
+            // LEVEL KİLİT GÖRSELLERİNİ GÜNCELLE
+            updateTabVisuals();
+        }
+
+        // --- HELPER: SHUFFLE ARRAY ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- MODAL & REPORT LOGIC ---
+        function openModal(dayId) {
+            currentActiveDay = dayId;
+            const modal = document.getElementById('mission-modal');
+            const title = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body-content'); // İçerik alanı
+            
+            // Başlık Düzenleme
+            let displayTitle = dayId.toUpperCase();
+            if(dayId.includes('w2_')) displayTitle = dayId.replace('w2_day', 'HAFTA 2 - GÜN ');
+            else if(dayId.includes('w3_')) displayTitle = dayId.replace('w3_day', 'HAFTA 3 - GÜN ');
+            else if(dayId.includes('w4_')) displayTitle = dayId.replace('w4_day', 'HAFTA 4 - GÜN ');
+            else if(dayId.includes('w5_')) displayTitle = dayId.replace('w5_day', 'HAFTA 5 - GÜN ');
+            else if(dayId.includes('w6_')) displayTitle = dayId.replace('w6_day', 'HAFTA 6 - GÜN ');
+            else if(dayId.includes('w7_')) displayTitle = dayId.replace('w7_day', 'HAFTA 7 - GÜN ');
+            else displayTitle = dayId.replace('day', 'HAFTA 1 - GÜN ');
+            
+            title.innerText = displayTitle + " RAPORU";
+
+            // --- İÇERİK OLUŞTURMA ---
+            let html = "";
+
+            // HAFTA 6 (HİKAYELER)
+            if (dayId.startsWith('w6_')) {
+                const storyText = w6_stories[dayId];
+                html = `
+                    <div class="space-y-4">
+                        <div class="bg-gray-800 p-4 rounded border border-gray-600 text-gray-300 leading-relaxed text-sm h-64 overflow-y-auto">
+                            ${storyText}
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 bg-gray-900 p-4 rounded">
+                            <div class="text-center">
+                                <label class="block text-xs text-orange-500 font-bold mb-1">BAŞTA</label>
+                                <input type="number" id="score-w6-start" class="score-input w-full bg-black border-gray-700" min="1" max="5" placeholder="-">
+                            </div>
+                            <div class="text-center">
+                                <label class="block text-xs text-orange-500 font-bold mb-1">ORTADA</label>
+                                <input type="number" id="score-w6-mid" class="score-input w-full bg-black border-gray-700" min="1" max="5" placeholder="-">
+                            </div>
+                            <div class="text-center">
+                                <label class="block text-xs text-orange-500 font-bold mb-1">SONDA</label>
+                                <input type="number" id="score-w6-end" class="score-input w-full bg-black border-gray-700" min="1" max="5" placeholder="-">
+                            </div>
+                        </div>
+                        <p class="text-xs text-center text-gray-500">*Her pozisyon için 1-5 arası puan verin.</p>
+                    </div>
+                `;
+            
+            // HAFTA 7 (ETKİNLİKLER)
+            } else if (dayId.startsWith('w7_')) {
+                const activityText = w7_activities[dayId];
+                
+                // 5. Gün için özel input (Sayı girme)
+                if(dayId === 'w7_day5') {
+                    html = `
+                        <div class="space-y-4">
+                            <div class="bg-gray-800 p-6 rounded border border-teal-600 text-white text-lg font-bold text-center leading-relaxed">
+                                <i class="fas fa-search text-4xl text-teal-500 mb-4"></i><br>
+                                ${activityText}
+                            </div>
+                            <div class="flex flex-col items-center bg-gray-900 p-4 rounded gap-2">
+                                <span class="text-gray-400 text-sm uppercase tracking-widest">BULUNAN KELİME SAYISI</span>
+                                <input type="number" id="score-w7" class="score-input w-24 h-12 text-2xl" min="0" placeholder="0">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="space-y-4">
+                            <div class="bg-gray-800 p-6 rounded border border-teal-600 text-white text-lg font-bold text-center leading-relaxed">
+                                <i class="fas fa-user-secret text-4xl text-teal-500 mb-4"></i><br>
+                                ${activityText}
+                            </div>
+                            <div class="flex flex-col items-center bg-gray-900 p-4 rounded gap-2">
+                                <span class="text-gray-400 text-sm uppercase tracking-widest">GÖREV PERFORMANSI (1-5)</span>
+                                <input type="number" id="score-w7" class="score-input w-24 h-12 text-2xl" min="1" max="5" placeholder="-">
+                            </div>
+                        </div>
+                    `;
+                }
+
+            // HAFTA 1-5 (KELİME TABLOLARI)
+            } else {
+                let words = [...gatData[dayId]];
+                if (dayId.startsWith('w5_')) {
+                    let extendedList = [];
+                    for(let i=0; i<3; i++) extendedList = extendedList.concat(words);
+                    words = shuffleArray(extendedList);
+                }
+
+                html = `
+                    <table class="cs-table">
+                        <thead>
+                            <tr>
+                                <th width="10%">#</th>
+                                <th width="60%">HEDEF KELİME</th>
+                                <th width="30%">PUAN (1-5)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-table-body">
+                `;
+                
+                words.forEach((word, index) => {
+                    let fontSizeClass = word.length > 20 ? "text-sm" : "text-lg";
+                    html += `
+                        <tr>
+                            <td class="text-gray-500 font-mono text-xs">${index + 1}</td>
+                            <td class="font-bold text-white ${fontSizeClass} tracking-wide text-left">${word.toUpperCase()}</td>
+                            <td>
+                                <input type="number" id="score-${index}" min="1" max="5" class="score-input focus:ring-1 focus:ring-orange-500" placeholder="-" oninput="validateInput(this)">
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += `</tbody></table>`;
+            }
+            
+            modalBody.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('mission-modal').classList.remove('active');
+            currentActiveDay = null;
+        }
+
+        function validateInput(input) {
+            if(input.value > 5) input.value = 5;
+            if(input.value < 1 && input.value !== "") input.value = 1;
+        }
+
+        function submitMissionReport(method) {
+            if(!currentActiveDay) return;
+            
+            let displayTitle = currentActiveDay.toUpperCase();
+            if(currentActiveDay.includes('w2_')) displayTitle = currentActiveDay.replace('w2_day', 'HAFTA 2 - GÜN ');
+            else if(currentActiveDay.includes('w3_')) displayTitle = currentActiveDay.replace('w3_day', 'HAFTA 3 - GÜN ');
+            else if(currentActiveDay.includes('w4_')) displayTitle = currentActiveDay.replace('w4_day', 'HAFTA 4 - GÜN ');
+            else if(currentActiveDay.includes('w5_')) displayTitle = currentActiveDay.replace('w5_day', 'HAFTA 5 - GÜN ');
+            else if(currentActiveDay.includes('w6_')) displayTitle = currentActiveDay.replace('w6_day', 'HAFTA 6 - GÜN ');
+            else if(currentActiveDay.includes('w7_')) displayTitle = currentActiveDay.replace('w7_day', 'HAFTA 7 - GÜN ');
+            else displayTitle = currentActiveDay.replace('day', 'HAFTA 1 - GÜN ');
+
+            let mailBody = `OPERATÖR: ${state.name}\n`;
+            mailBody += `GÖREV: ${displayTitle}\n`;
+            mailBody += `TARİH: ${new Date().toLocaleDateString()}\n\n`;
+            mailBody += `--- PUAN TABLOSU ---\n`;
+            
+            let totalScore = 0;
+            let filledCount = 0; // Dolu alan kontrolü için
+
+            // HAFTA 6 RAPORLAMA (HİKAYE)
+            if (currentActiveDay.startsWith('w6_')) {
+                const sStart = document.getElementById('score-w6-start').value || "0";
+                const sMid = document.getElementById('score-w6-mid').value || "0";
+                const sEnd = document.getElementById('score-w6-end').value || "0";
+                
+                mailBody += `POZİSYON - BAŞTA:  [ ${sStart} / 5 ]\n`;
+                mailBody += `POZİSYON - ORTADA: [ ${sMid} / 5 ]\n`;
+                mailBody += `POZİSYON - SONDA:  [ ${sEnd} / 5 ]\n`;
+                
+                totalScore = parseInt(sStart) + parseInt(sMid) + parseInt(sEnd);
+                if (sStart !== "0" && sMid !== "0" && sEnd !== "0") filledCount = 1; // Hepsi doluysa tamam
+
+            // HAFTA 7 RAPORLAMA (ETKİNLİK)
+            } else if (currentActiveDay.startsWith('w7_')) {
+                const sAct = document.getElementById('score-w7').value || "0";
+                
+                if (currentActiveDay === 'w7_day5') {
+                     mailBody += `BULUNAN Z KELİME SAYISI: [ ${sAct} ]\n`;
+                     // Buradaki puanı sembolik olarak sayı kadar verelim veya sabit bir XP
+                     totalScore = parseInt(sAct) * 10; 
+                } else {
+                     mailBody += `GÖREV PERFORMANSI: [ ${sAct} / 5 ]\n`;
+                     totalScore = parseInt(sAct);
+                }
+                
+                if (sAct !== "0") filledCount = 1;
+
+            // HAFTA 1-5 RAPORLAMA (KELİME LİSTESİ)
+            } else {
+                const rows = document.querySelectorAll('#modal-table-body tr');
+                rows.forEach((row, index) => {
+                    const word = row.cells[1].innerText;
+                    const input = row.querySelector('input');
+                    const score = input.value || "0";
+                    if(score !== "0") filledCount++;
+                    totalScore += parseInt(score);
+                    mailBody += `${word}: [ ${score} / 5 ]\n`;
+                });
+                // Eğer liste ise ve eksik varsa uyar
+                if(filledCount < rows.length) {
+                    if(!confirm("Tüm kutucukları doldurmadın. Yine de göndermek istiyor musun?")) return;
+                }
+                filledCount = 1; // Onaylandıysa geç
+            }
+
+            mailBody += `\n-----------------------\n`;
+            mailBody += `TOPLAM PUAN: ${totalScore}\n`;
+            
+            // Eğer H6 veya H7 boşsa uyar
+            if((currentActiveDay.startsWith('w6_') || currentActiveDay.startsWith('w7_')) && filledCount === 0) {
+                 if(!confirm("Puan girmedin. Yine de göndermek istiyor musun?")) return;
+            }
+
+            const subject = `CS Operasyon Raporu: ${state.name} - ${displayTitle}`;
+
+            if (method === 'mailto') {
+                 window.location.href = `mailto:mehmethanefibulduk@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
+                 alert("Mail uygulamanız açılıyor. Lütfen açılan pencerede 'GÖNDER' tuşuna basmayı unutmayın!");
+            } else if (method === 'gmail') {
+                 const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=mehmethanefibulduk@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
+                 window.open(gmailUrl, '_blank');
+                 alert("Gmail web sayfası açılıyor. Lütfen açılan pencerede 'GÖNDER' tuşuna basmayı unutmayın!");
+            }
+
+            handleTaskCompletion(currentActiveDay);
+            closeModal();
         }
 
     </script>
