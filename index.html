@@ -118,29 +118,14 @@
         .modal-content::-webkit-scrollbar { width: 8px; }
         .modal-content::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
 
-        /* --- LEVEL KİLİT STİLLERİ (YENİ) --- */
+        /* --- LEVEL KİLİT STİLLERİ (YENİ - Sadece stil olarak kaldı, aktif değil) --- */
         .locked-level {
+            /* Kilitler kaldırıldığı için bu stil artık uygulanmayacak */
             position: relative;
             cursor: not-allowed !important;
         }
         .locked-level .bg-cover {
             filter: grayscale(100%) brightness(40%) !important;
-        }
-        .locked-level::after {
-            content: "\f023"; /* FontAwesome Lock */
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: rgba(255,255,255,0.3);
-            z-index: 20;
-        }
-        .locked-level:hover::after {
-            color: rgba(222, 155, 53, 0.8);
-            transform: translate(-50%, -50%) scale(1.1);
-            transition: all 0.2s;
         }
     </style>
 </head>
@@ -182,8 +167,10 @@
             <!-- İMZA ALANI -->
             <div class="mt-8 border-t border-gray-700 pt-4">
                 <p class="text-[10px] text-gray-500 font-mono tracking-widest uppercase opacity-70">
-                    Operasyon Lideri<br>
-                    <span class="text-orange-600 font-bold">stj.dkt.Mehmet Hanefi Bulduk</span>
+                    HAZIRLAYAN VE KONTROL EDENLER: <br> 
+                    <span class="text-orange-600 font-bold">stj.dkt.Mehmet Hanefi Bulduk</span><br>
+                    <span class="text-orange-600 font-bold">stj.dkt.Zeynep Akdağ</span><br>
+                    <span class="text-orange-600 font-bold">stj.dkt.Zeynep Sıla Mutlu</span>
                 </p>
             </div>
         </div>
@@ -555,7 +542,7 @@
             }
         };
 
-        // --- STORAGE & STATE ---
+        // --- STORAGE & STATE (ÇOKLU KULLANICI SİSTEMİ) ---
         const Storage = {
             get: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
             set: (key, val) => { try { localStorage.setItem(key, val); } catch (e) { } },
@@ -569,32 +556,34 @@
             currentTab: 1
         };
 
-        let currentActiveDay = null; // Hangi günün tablosu açık?
+        let currentActiveDay = null;
 
         // --- INIT ---
         window.onload = function() {
-            loadState();
-            if(state.name) {
-                showDashboard();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
+            // Otomatik giriş yapma, her seferinde isim sor ki çocuklar karışmasın
+            document.getElementById('login-screen').classList.remove('hidden');
+            
+            // Kolaylık olsun diye son giren kişinin ismini kutuya yaz (ama başlatma)
+            const lastUser = Storage.get('cs_last_user');
+            if(lastUser) {
+                document.getElementById('player-name').value = lastUser;
             }
         };
 
-        function loadState() {
-            const saved = Storage.get('cs_artik_state_v2');
-            if(saved) {
-                try { state = JSON.parse(saved); } catch(e) { }
-            }
-        }
-
         function saveState() {
-            Storage.set('cs_artik_state_v2', JSON.stringify(state));
+            if(!state.name) return;
+            // İsme özel kayıt anahtarı oluştur (Örn: cs_user_ahmet)
+            const key = `cs_user_${state.name.trim().toLowerCase()}`;
+            Storage.set(key, JSON.stringify(state));
+            
+            // Son giren kişiyi hatırla
+            Storage.set('cs_last_user', state.name);
         }
 
         function resetProgress() {
-            if(confirm("Oyundan çıkmak ve rankını sıfırlamak istiyor musun?")) {
-                Storage.remove('cs_artik_state_v2');
+            if(confirm("Mevcut ajanın ilerlemesini silip çıkış yapmak istiyor musun? (Bu işlem geri alınamaz)")) {
+                const key = `cs_user_${state.name.trim().toLowerCase()}`;
+                Storage.remove(key);
                 location.reload();
             }
         }
@@ -609,10 +598,32 @@
                 return;
             }
 
-            state.name = nameInput;
-            state.sound = soundInput || "Z";
+            const cleanName = nameInput.trim();
+            const userKey = `cs_user_${cleanName.toLowerCase()}`;
             
-            saveState();
+            // Bu isimde kayıtlı veri var mı kontrol et
+            const savedData = Storage.get(userKey);
+            
+            if(savedData) {
+                // VARSA: Verileri Yükle
+                try {
+                    state = JSON.parse(savedData);
+                    // Hedef ses değişmişse güncelle, yoksa eskisi kalsın
+                    if(soundInput && soundInput !== state.sound) state.sound = soundInput;
+                } catch(e) {
+                    console.error("Kayıt yükleme hatası", e);
+                }
+            } else {
+                // YOKSA: Yeni Profil Oluştur
+                state = {
+                    name: cleanName,
+                    sound: soundInput || "Z",
+                    completed: [],
+                    currentTab: 1
+                };
+            }
+            
+            saveState(); // Güncel durumu kaydet
             showDashboard();
         }
 
@@ -623,48 +634,13 @@
             document.getElementById('display-name').innerText = state.name;
             document.getElementById('display-sound').innerText = state.sound;
 
-            switchTab(state.currentTab);
+            // En son kaldığı sekmeyi aç
+            switchTab(state.currentTab || 1);
             updateXP();
         }
 
-        // --- LEVEL CHECK HELPER ---
-        function isLevelComplete(levelNum) {
-            const levelKey = `level${levelNum}`;
-            const levelData = gameData[levelKey];
-            if (!levelData) return false;
-
-            // Seviyedeki tüm görevlerin ID'leri tamamlananlar listesinde var mı?
-            return levelData.tasks.every(task => state.completed.includes(task.id));
-        }
-
-        function updateTabVisuals() {
-            for(let i=2; i<=7; i++) { // 1. seviye her zaman açık
-                const tab = document.getElementById(`tab-${i}`);
-                if (!tab) continue;
-
-                // Bir önceki seviye tamamlandı mı?
-                const isUnlocked = isLevelComplete(i - 1);
-                
-                if (isUnlocked) {
-                    tab.classList.remove('locked-level');
-                } else {
-                    tab.classList.add('locked-level');
-                }
-            }
-        }
-
         function switchTab(tabNum) {
-            // KİLİT KONTROLÜ
-            if (tabNum > 1) {
-                // Bir önceki seviye tamamlandı mı?
-                if (!isLevelComplete(tabNum - 1)) {
-                    // Uyarı ver
-                    alert(`ERİŞİM REDDEDİLDİ! ⛔\nBu operasyona geçmek için önce ${tabNum - 1}. Haftadaki TÜM görevleri tamamlamalısın!`);
-                    return; // Fonksiyondan çık, geçiş yapma
-                }
-            }
-
-            state.currentTab = tabNum;
+            state.currentTab = tabNum; // Sekme bilgisini state'e kaydet
             
             // Tab stilleri
             for(let i=1; i<=7; i++) {
@@ -719,21 +695,19 @@
             data.tasks.forEach(task => {
                 const isChecked = state.completed.includes(task.id);
                 const isBoss = task.boss;
-                const isLocked = task.id === "locked";
+                // const isLocked = task.id === "locked"; // KİLİTLER KALDIRILDI
                 
                 let cardStyle = isChecked 
                     ? "bg-green-900/40 border-l-4 border-green-500 opacity-70" 
                     : isBoss 
                         ? "bg-red-900/20 border-l-4 border-red-600" 
-                        : isLocked
-                            ? "bg-gray-900 border-l-4 border-gray-700 opacity-50 cursor-not-allowed"
-                            : "bg-[#151921] border-l-4 border-gray-600";
+                        : "bg-[#151921] border-l-4 border-gray-600";
                 
-                let iconColor = isChecked ? "text-green-500" : isBoss ? "text-red-500" : isLocked ? "text-gray-600" : "text-orange-500";
-                let clickAction = isLocked ? "" : `onclick="toggleTask('${task.id}')"`;
+                let iconColor = isChecked ? "text-green-500" : isBoss ? "text-red-500" : "text-orange-500";
+                let clickAction = `onclick="toggleTask('${task.id}')"`;
 
                 html += `
-                    <div ${clickAction} class="level-card ${isLocked ? '' : 'cursor-pointer'} p-4 flex items-center gap-4 ${cardStyle}">
+                    <div ${clickAction} class="level-card cursor-pointer p-4 flex items-center gap-4 ${cardStyle}">
                         <div class="w-10 h-10 flex items-center justify-center bg-black/50 rounded border border-gray-700 ${iconColor}">
                             <i class="fas fa-${isChecked ? 'check' : task.icon}"></i>
                         </div>
@@ -786,7 +760,7 @@
 
         function updateXP() {
             let totalXP = 0;
-            const maxXP = 8000; // Hafta 6 ve 7 eklendiği için max XP arttırıldı
+            const maxXP = 8000; 
             
             Object.values(gameData).forEach(level => {
                 level.tasks.forEach(task => {
@@ -819,9 +793,6 @@
                 glow.classList.remove('opacity-0');
                 setTimeout(() => glow.classList.add('opacity-0'), 1000);
             }
-
-            // LEVEL KİLİT GÖRSELLERİNİ GÜNCELLE
-            updateTabVisuals();
         }
 
         // --- HELPER: SHUFFLE ARRAY ---
