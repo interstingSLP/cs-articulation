@@ -152,12 +152,16 @@
             
             <div id="step-note">
                 <h3 class="text-xl tactical-font text-orange-500 mb-4 text-center modal-title-display">GÜN X - SET Y</h3>
-                <div class="bg-gray-800 p-6 rounded border border-gray-600 mb-6 text-sm text-gray-300 font-mono leading-relaxed text-center">
-                    <i class="fas fa-info-circle text-4xl text-blue-400 mb-4"></i><br>
-                    HECELERİ TANE TANE SÖYLEYEREK ÇALIŞINIZ.<br><br>
+                
+                <div class="bg-yellow-900/30 border border-yellow-600 p-4 rounded mb-4 text-center">
+                    <i class="fas fa-bolt text-2xl text-yellow-500 mb-2 animate-pulse"></i>
+                    <p id="motivational-text" class="text-yellow-400 font-bold text-lg tactical-font uppercase">HARİKA GİDİYORSUN!</p>
+                </div>
+
+                <div class="bg-gray-800 p-4 rounded border border-gray-600 mb-6 text-sm text-gray-300 font-mono leading-relaxed text-center">
+                    HECELERİ TANE TANE SÖYLEYEREK ÇALIŞINIZ.<br>
                     HER HECEDEN SONRA PUAN VERİNİZ.<br><br>
-                    TİTREDİĞİNİ DÜŞÜNDÜĞÜNÜZ ZAMAN <span class="text-blue-400 font-bold">(T)</span> İŞARETLEYİNİZ.<br><br>
-                    KOLAY GELSİN :)
+                    TİTREDİĞİNİ DÜŞÜNDÜĞÜNÜZ ZAMAN <span class="text-blue-400 font-bold">(T)</span> İŞARETLEYİNİZ.
                 </div>
                 <button onclick="startDrill()" class="cs-btn w-full py-4 text-white font-bold tracking-widest">OKUDUM, KAYDI BAŞLAT</button>
             </div>
@@ -166,7 +170,7 @@
                 <h3 class="text-xl tactical-font text-orange-500 mb-2 text-center modal-title-display">GÜN X - SET Y</h3>
                 <div class="text-center py-4 bg-black/30 rounded mb-4 border border-gray-800">
                     <div id="syllable-display" class="text-6xl md:text-8xl font-black text-white/90 mb-2 uppercase italic tracking-wider">RA</div>
-                    <p class="text-orange-500 font-mono text-2xl" id="counter">1 / 8</p>
+                    <p class="text-orange-500 font-mono text-2xl" id="counter">1 / 20</p>
                     <p class="text-[10px] text-gray-500 mt-2 uppercase">HECEYİ OKU VE KENDİNİ PUANLA (1-5)</p>
                 </div>
                 
@@ -213,15 +217,54 @@
     <script>
         const RECIPIENTS = "mehmethanefibulduk@gmail.com,zeynepsilamutlu@gmail.com,zeynepakda.z@gmail.com";
         
-        // Orijinal Tablo Verileri
+        // Motivasyon Mesajları
+        const motives = [
+            "Harika gidiyorsun Ajan! Bu seti hızlıca halledelim.",
+            "Derin bir nefes al, odaklan ve hedefleri vur!",
+            "Sen bir efsanesin! Şimdi yeteneklerini gösterme zamanı.",
+            "Hedefe kilitlen! Sesin bir keskin nişancı kadar net olmalı.",
+            "Pes etmek yok! Görev başarıyla tamamlanacak.",
+            "Mükemmel ilerliyorsun! Hadi bu seti de bitirelim.",
+            "Operasyon kontrol altında. Başlamak için hazırsın!"
+        ];
+
+        // 20 Tekrarlı Tablo Verileri
         const syllableData = {
-            d1: ["r r", "r ra ra", "ra ra", "ra ru ru", "ru ru", "ru ro ro", "ro ro", "Ro Ar er"],
-            d2: ["r r", "r re re", "re re", "re ri ri", "ri ri", "ri rö rö", "rö rö", "Rö Ir"],
-            d3: ["r r", "r rı rı", "rı rı", "rı rü rü", "rü rü", "rü ru ru", "ru ru", "Ru Ir"],
-            d4: ["r r", "r ro ro", "ro ro", "ro ru ru", "ru ru", "ru rü rü", "rü rü", "Rü rü"],
-            d5: ["r r", "r ra ra", "ra re", "re rö rö", "rö rö", "rö ro ro", "ro ro", "Ro"],
-            d6: ["r r", "r ri ri", "rı rı", "rı ru ru", "ru ru", "ru rü rü", "rü rü", "rü"],
-            d7: ["ra ra", "re re ro", "ro ro", "ru ru ru", "rü rü", "rü ro ro", "ro rö", "Rö rö"]
+            d1: {
+                s1: ["rı", "ro", "ru", "ra", "r", "rı", "ro", "ru", "ra", "r", "rı", "ro", "ru", "ra", "r", "rı", "ro", "ru", "ra", "r"],
+                s2: ["ru", "ra", "rı", "ro", "ru", "ru", "ra", "rı", "ro", "ru", "ru", "ra", "rı", "ro", "ru", "ru", "ra", "rı", "ro", "ru"],
+                s3: ["r", "rı", "r", "r", "ra", "r", "rı", "r", "r", "ra", "r", "rı", "r", "r", "ra", "r", "rı", "r", "r", "ra"]
+            },
+            d2: {
+                s1: ["ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru"],
+                s2: ["rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra"],
+                s3: ["ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r"]
+            },
+            d3: {
+                s1: ["ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro"],
+                s2: ["ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru"],
+                s3: ["ru", "r", "ro", "ra", "rı", "ru", "r", "ro", "ra", "rı", "ru", "r", "ro", "ra", "rı", "ru", "r", "ro", "ra", "rı"]
+            },
+            d4: {
+                s1: ["r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı"],
+                s2: ["rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra"],
+                s3: ["ra", "ro", "rı", "r", "ru", "ra", "ro", "rı", "r", "ru", "ra", "ro", "rı", "r", "ru", "ra", "ro", "rı", "r", "ru"]
+            },
+            d5: {
+                s1: ["r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı"],
+                s2: ["rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra", "rı", "r", "ru", "ro", "ra"],
+                s3: ["ra", "ro", "rı", "r", "ru", "ra", "ro", "rı", "r", "ru", "ra", "ro", "rı", "r", "ru", "ra", "ro", "rı", "r", "ru"]
+            },
+            d6: {
+                s1: ["ru", "rı", "r", "ra", "ro", "ru", "rı", "r", "ra", "ro", "ru", "rı", "r", "ra", "ro", "ru", "rı", "r", "ra", "ro"],
+                s2: ["ro", "ru", "rı", "r", "ra", "ro", "ru", "rı", "r", "ra", "ro", "ru", "rı", "r", "ra", "ro", "ru", "rı", "r", "ra"],
+                s3: ["ra", "r", "ro", "ru", "rı", "ra", "r", "ro", "ru", "rı", "ra", "r", "ro", "ru", "rı", "ra", "r", "ro", "ru", "rı"]
+            },
+            d7: {
+                s1: ["rı", "ra", "r", "ru", "ro", "rı", "ra", "r", "ru", "ro", "rı", "ra", "r", "ru", "ro", "rı", "ra", "r", "ru", "ro"],
+                s2: ["r", "rı", "ra", "r", "ru", "r", "rı", "ra", "r", "ru", "r", "rı", "ra", "r", "ru", "r", "rı", "ra", "r", "ru"],
+                s3: ["ro", "ru", "rı", "ro", "ra", "ro", "ru", "rı", "ro", "ra", "ro", "ru", "rı", "ro", "ra", "ro", "ru", "rı", "ro", "ra"]
+            }
         };
 
         let state = { name: "", progress: {} };
@@ -230,7 +273,7 @@
         let parentRate = 0;
         let recorder, chunks = [];
         let activeReportDay = 0;
-        let isTitreşimli = false;
+        let isTitreşimli = false; // T harfi toggle durumu
         
         let currentSetList = [];
 
@@ -238,7 +281,7 @@
             const n = document.getElementById('player-name').value.trim();
             if(!n) return alert("İsim giriniz!");
             state.name = n;
-            const saved = localStorage.getItem(`cs_r_hece_17mart_${n.toLowerCase()}`);
+            const saved = localStorage.getItem(`cs_r_hece_20tekrar_${n.toLowerCase()}`);
             if(saved) state = JSON.parse(saved);
             document.getElementById('display-name').innerText = n.toUpperCase();
             document.getElementById('login-screen').classList.add('hidden');
@@ -285,19 +328,16 @@
         function openMission(d, s) {
             currentDay = d; currentSet = s; reps = 1; childScores = []; parentRate = 0;
             
-            // "ru ro ro" gibi yan yana gelen kelimeleri tekil dizilere bölüyoruz
-            let flatList = [];
-            syllableData[`d${d}`].forEach(item => {
-                const parts = item.split(/\s+/).filter(Boolean);
-                flatList.push(...parts);
-            });
-            
-            // Elde edilen tekil hece dizisini karıştırıyoruz
-            currentSetList = flatList.sort(() => Math.random() - 0.5);
+            // Tablodaki 20'li veriyi alıp KARIŞTIRIYORUZ (Random - Her Set İçin)
+            currentSetList = [...syllableData[`d${d}`][`s${s}`]].sort(() => Math.random() - 0.5);
 
             document.querySelectorAll('.modal-title-display').forEach(el => el.innerText = `GÜN ${d} - SET ${s}`);
             
-            // Not ekranı gösteriliyor
+            // Rastgele motivasyon mesajı
+            const randomMotive = motives[Math.floor(Math.random() * motives.length)];
+            document.getElementById('motivational-text').innerText = randomMotive;
+            
+            // Ekran Yönetimi
             document.getElementById('step-note').classList.remove('hidden');
             document.getElementById('step-drill').classList.add('hidden');
             document.getElementById('step-parent').classList.add('hidden');
@@ -326,7 +366,6 @@
                 updateSyllableDisplay();
                 document.getElementById('counter').innerText = `1 / ${currentSetList.length}`;
                 
-                // Görev ekranına geç
                 document.getElementById('step-note').classList.add('hidden');
                 document.getElementById('step-drill').classList.remove('hidden');
             } catch(e) { alert("Mikrofon izni gerekli!"); }
@@ -349,11 +388,11 @@
         }
 
         function recordRep(score) {
-            // (T) durumunu puana ekliyoruz
+            // (T) durumunu puana ekliyoruz. Örn: 4T
             const finalScore = isTitreşimli ? score + "T" : score.toString();
             childScores.push(finalScore);
             
-            // Sonraki hece için (T) butonunu sıfırlıyoruz
+            // Sonraki hece için (T) butonunu sıfırlıyoruz.
             isTitreşimli = false;
             const tBtn = document.getElementById('toggle-t');
             tBtn.classList.add('text-blue-400', 'border-blue-500');
@@ -384,7 +423,7 @@
                 syllables: currentSetList 
             };
             
-            localStorage.setItem(`cs_r_hece_17mart_${state.name.toLowerCase()}`, JSON.stringify(state));
+            localStorage.setItem(`cs_r_hece_20tekrar_${state.name.toLowerCase()}`, JSON.stringify(state));
             confetti({ particleCount: 150, spread: 60, origin: { y: 0.6 } });
             closeModal();
             renderCards();
