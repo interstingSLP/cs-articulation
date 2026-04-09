@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS: Sözcük Operasyonu - Tam Liste</title>
+    <title>CS: Sözcük Operasyonu - 12 Günlük Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Chakra+Petch:wght@400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
@@ -103,7 +103,7 @@
                 <i class="fas fa-crosshairs text-6xl text-orange-500 animate-spin-slow" style="animation-duration: 10s;"></i>
             </div>
             <h1 class="text-4xl text-white mb-1 tracking-widest uppercase italic">CS: R HECE</h1>
-            <h2 class="text-orange-500 mb-6 tracking-widest uppercase text-sm font-bold">Anlamsız Hece Operasyonu (3 Set)</h2>
+            <h2 class="text-orange-500 mb-6 tracking-widest uppercase text-sm font-bold">12 Günlük Tam Operasyon</h2>
             
             <div class="space-y-4 text-left">
                 <div>
@@ -174,7 +174,7 @@
                 </div>
                 
                 <button id="ask-score-btn" onclick="showScoreButtons()" class="w-full py-4 rounded text-lg font-bold uppercase border-2 border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-black transition mb-3 animate-pulse">
-                    <i class="fas fa-question-circle mr-2"></i> Bu söylediğine kaç verirsin?
+                    <i class="fas fa-question-circle mr-2"></i> Bu söylediğini kaç verirsin?
                 </button>
 
                 <div id="score-buttons-container" class="hidden">
@@ -222,56 +222,36 @@
     <script>
         const RECIPIENTS = "mehmethanefibulduk@gmail.com,zeynepsilamutlu@gmail.com,zeynepakda.z@gmail.com";
         
-        // Yeni Nesil Motivasyon Mesajları
+        // 12 Günlük İsimler Tablosu (Belgedeki Sıralamaya Göre)
+        const dayNames = ["PERŞEMBE", "CUMA", "CUMARTESİ", "PAZAR", "PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA", "CUMARTESİ", "PAZAR", "PAZARTESİ"];
+
+        // Yeni Motivasyon Mesajları
         const motives = [
-            "Sahaya inme vakti Ajan! Gözler senin üzerinde.",
-            "Muhteşem bir enerji! Bu seti de başarıyla tamamlayacaksın.",
-            "Görev seni bekliyor. Nefesini ayarla ve tam isabet sağla!",
-            "Efsanevi bir performans sergiliyorsun, aynen böyle devam!",
-            "Rakiplerin bu net sesten korkacak. Başarıya çok yakınsın!",
-            "Zorluklar seni yıldıramaz. Hadi şu heceleri tek tek avlayalım!",
-            "Senin gibi bir uzman için bu set çocuk oyuncağı. Göreve başla!",
-            "Radar açık, hedef net. Telsizden gelen sese odaklan ve tekrarla!",
-            "Şimdiye kadarki en iyi operasyonun olacak, hissediyorum."
+            "Güzel bir başlangıç için harika bir an Ajan! Derin bir nefes al ve başla.",
+            "Telsiz açık! Hedef heceleri net bir şekilde merkeze iletiyoruz.",
+            "Her sette biraz daha ustalaşıyorsun. Sahne senin!",
+            "Bu operasyonda en büyük silahın sesin. Göster kendini!",
+            "Efsanevi bir performansa hazır mısın? Heceleri tek tek avlayalım.",
+            "Zorluklar seni durduramaz. Görev başlıyor, odaklan!",
+            "Kulaklıklar takıldı, kayıt devrede. Operasyon başlasın!",
+            "Mükemmel ilerliyorsun Ajan! Bu seti de başarıyla bitireceğine eminim.",
+            "Büyük görevler, büyük yetenekler ister. Sende o yetenek fazlasıyla var!"
         ];
 
-        // Yeni Ödev Şablonu PDF Verileri (20'şer Tekrarlı 3 Set)
+        // 12 Günlük Veri Tablosu
         const syllableData = {
-            d1: {
-                s1: ["rı", "rö", "rü", "ar", "re", "er", "ro", "ur", "or", "ır", "ri", "ır", "rü", "or", "ır", "rö", "ro", "ar", "rü", "er"],
-                s2: ["ru", "ar", "er", "ır", "ur", "ru", "ra", "ır", "rö", "or", "rü", "ar", "er", "rı", "rö", "ur", "ri", "ır", "ru", "or"],
-                s3: ["rü", "er", "ro", "ri", "ar", "or", "ur", "re", "ır", "er", "rü", "ar", "or", "ur", "ru", "ir", "ra", "ro", "ır", "er"]
-            },
-            d2: {
-                s1: ["ro", "ar", "ru", "ri", "ur", "or", "ar", "rö", "ri", "er", "or", "ır", "ir", "er", "ro", "or", "ra", "rı", "ir", "ur"],
-                s2: ["ar", "er", "or", "ur", "ir", "ri", "er", "rü", "or", "ar", "rı", "ar", "ru", "or", "ra", "ri", "ır", "rü", "or", "ra"],
-                s3: ["ur", "rö", "ar", "rı", "ar", "ru", "rö", "ra", "rı", "er", "rü", "ro", "ur", "rı", "er", "ur", "rö", "ra", "ır", "ir"]
-            },
-            d3: {
-                s1: ["ar", "re", "ır", "ir", "ur", "or", "rö", "ru", "er", "ır", "or", "rö", "ur", "ır", "rü", "ar", "ur", "ır", "er", "rö"],
-                s2: ["er", "ır", "or", "ru", "ur", "ır", "rö", "ir", "er", "ur", "or", "ur", "rö", "ar", "ir", "re", "ro", "ur", "er", "or"],
-                s3: ["ur", "ir", "rü", "ır", "or", "ar", "re", "er", "ir", "ur", "or", "ır", "ri", "ır", "ar", "er", "ur", "rö", "ur", "rü"]
-            },
-            d4: {
-                s1: ["ar", "re", "ır", "ir", "ur", "or", "rö", "ur", "er", "ur", "rö", "or", "ır", "ir", "ar", "ur", "rı", "re", "or", "ır"],
-                s2: ["ir", "ro", "ur", "er", "rü", "er", "ro", "ir", "ar", "or", "ur", "re", "ır", "er", "ar", "rö", "or", "ur", "rü", "er"],
-                s3: ["or", "ru", "ur", "ır", "rö", "ir", "er", "ur", "or", "ro", "er", "ir", "or", "rö", "ur", "rü", "ir", "ır", "er", "ar"]
-            },
-            d5: {
-                s1: ["rö", "ir", "ar", "re", "er", "ro", "ur", "or", "ır", "ri", "er", "rü", "or", "ur", "rö", "ar", "ir", "ri", "er", "ur"],
-                s2: ["ar", "re", "ır", "ir", "ur", "rö", "or", "ru", "er", "ir", "or", "ru", "ur", "ır", "rö", "ir", "er", "ur", "or", "er"],
-                s3: ["ır", "rü", "or", "ur", "rö", "ar", "ir", "ri", "er", "ur", "er", "ur", "or", "ro", "er", "ir", "or", "rö", "ur", "rü"]
-            },
-            d6: {
-                s1: ["ir", "rü", "ar", "ur", "ır", "er", "rö", "ur", "re", "ır", "er", "ar", "rö", "or", "ur", "rü", "er", "ar", "or", "ur"],
-                s2: ["ar", "re", "ır", "ir", "ur", "rö", "rö", "ru", "er", "ur", "ar", "re", "ır", "ir", "ur", "ar", "rö", "ru", "er", "or"],
-                s3: ["ir", "er", "ur", "or", "ro", "er", "ir", "or", "rö", "ur", "ar", "rö", "or", "ur", "rü", "er", "ar", "or", "ur", "ır"]
-            },
-            d7: {
-                s1: ["or", "ru", "ur", "ır", "rö", "ir", "er", "ur", "or", "ro", "ir", "or", "rö", "ur", "rü", "ir", "ır", "er", "ar", "or"],
-                s2: ["ur", "rö", "ır", "ir", "er", "ar", "rü", "er", "ro", "ri", "ar", "ur", "ur", "re", "ır", "er", "ir", "rü", "ru", "or"],
-                s3: ["er", "or", "ır", "rü", "ar", "re", "ır", "ir", "ur", "or", "ır", "ru", "er", "ir", "rö", "or", "ur", "ir", "ar", "ur"]
-            }
+            "d1": {"s1": ["rır", "rör", "ürü", "ara", "rer", "er", "ro", "ur", "ror", "ırı", "rir", "ır", "rü", "ror", "ırır", "rör", "ro", "ara", "rür", "ere"], "s2": ["rur", "rar", "ere", "ırı", "rur", "ru", "ra", "ır", "rör", "or", "rür", "ar", "er", "rır", "örö", "uru", "rir", "rır", "ru", "oro"], "s3": ["rür", "rer", "oro", "iri", "rar", "ror", "ur", "re", "rır", "er", "ürü", "rar", "oro", "uru", "rur", "rir", "ara", "ror", "ırı", "ere"]}, 
+            "d2": {"s1": ["ror", "ara", "uru", "rir", "rur", "oro", "rar", "rör", "rir", "ere", "ror", "ırı", "iri", "rer", "oro", "ror", "Rar", "rır", "iri", "uru"], "s2": ["rar", "rer", "oro", "uru", "iri", "rir", "rer", "rür", "ror", "ara", "Rır", "ara", "uru", "oro", "ra", "rir", "rır", "ürü", "oro", "rar"], "s3": ["rur", "rör", "ara", "rır", "rar", "uru", "rör", "rar", "ırı", "rer", "rür", "oro", "ur", "rır", "ere", "rur", "rör", "ara", "ırı", "iri"]}, 
+            "d3": {"s1": ["rar", "rer", "rır", "rir", "rur", "ror", "Rör", "uru", "Ere", "Irı", "oro", "örö", "rur", "rır", "ürü", "Ara", "uru", "Irı", "rer", "rör"], "s2": ["Ere", "Irı", "Oro", "uru", "rur", "rır", "örö", "Iri", "Ere", "Uru", "ror", "rur", "Rör", "Ara", "Irı", "Rer", "Ror", "Rur", "Ere", "Ror"], "s3": ["rur", "rir", "Rür", "rır", "ror", "rar", "Rer", "Ere", "Ir", "Ur", "oro", "ırı", "iri", "rır", "ara", "ere", "uru", "örö", "rur", "ürü"]}, 
+            "d4": {"s1": ["Ara", "ere", "Irı", "Iri", "Uru", "Oro", "örö", "rur", "rer", "rur", "Rör", "ror", "Rır", "Rir", "rar", "Uru", "Irı", "ere", "Oro", "Irı"], "s2": ["rır", "ror", "rur", "rer", "Rür", "Ere", "or", "iri", "ara", "or", "uru", "ere", "Irı", "rer", "rar", "rör", "ürü", "Rur", "Ror", "Ere"], "s3": ["Oro", "uru", "rur", "Irı", "örö", "iri", "Ere", "Uru", "ror", "oro", "rer", "Rır", "Oro", "Rör", "rur", "ürü", "rir", "rır", "Ere", "Ara"]}, 
+            "d5": {"s1": ["Rör", "Rir", "rar", "Rer", "Ere", "Ror", "rur", "Oro", "rır", "iri", "rer", "Rür", "ror", "Uru", "Rör", "Ara", "rir", "iri", "Ere", "rur"], "s2": ["Ara", "ere", "Irı", "iri", "Uru", "örö", "Oro", "Rur", "rer", "rir", "ror", "Rur", "Uru", "rır", "Rör", "iri", "Ere", "rur", "Oro", "rer"], "s3": ["rır", "Rür", "ror", "rur", "rör", "rar", "rir", "iri", "Ere", "uru", "rer", "Rur", "Ror", "oro", "rer", "rir", "ror", "Rör", "uru", "Rür"]}, 
+            "d6": {"s1": ["iri", "ürü", "Ara", "Uru", "Irı", "Ere", "Örö", "rur", "Rer", "rır", "Ere", "rar", "Rör", "Oro", "Uru", "Rür", "rer", "Ara", "ror", "rur"], "s2": ["rar", "Rer", "rır", "rir", "rur", "Rör", "örö", "uru", "Ere", "Uru", "Ara", "Rer", "Irı", "iri", "rur", "rar", "Rör", "Rur", "Ere", "Oro"], "s3": ["rir", "Ere", "rur", "Oro", "Ror", "rer", "iri", "ror", "Rör", "rur", "Ara", "örö", "Oro", "Uru", "ürü", "rer", "rar", "ror", "rur", "rır"]}, 
+            "d7": {"s1": ["ror", "Rur", "uru", "rır", "örö", "rir", "rer", "rur", "Oro", "Ror", "iri", "Oro", "Rör", "Uru", "ürü", "rir", "Irı", "Ere", "Ara", "ror"], "s2": ["Uru", "Rör", "Irı", "iri", "ere", "Ara", "Rür", "Rer", "Ror", "Rir", "rar", "rur", "Uru", "ere", "rır", "Ere", "iri", "ürü", "Rur", "oro"], "s3": ["Ere", "Oro", "Rır", "ürü", "Rar", "Rer", "Irı", "iri", "Uru", "ror", "rır", "Rur", "Ere", "rir", "örö", "Oro", "Uru", "iri", "Ara", "rur"]}, 
+            "d8": {"s1": ["rır", "rör", "ürü", "ara", "rer", "er", "ro", "ur", "ror", "ırı", "rir", "ır", "rü", "ror", "ırır", "rör", "ro"], "s2": ["rur", "rar", "ere", "ırı", "rur", "ru", "ra", "ır", "rör", "or", "rür", "ar", "er", "rır", "örö", "uru", "rir"], "s3": ["rür", "rer", "oro", "iri", "rar", "ror", "ur", "re", "rır", "er", "ürü", "rar", "oro", "uru", "rur", "rir", "ara"]}, 
+            "d9": {"s1": ["rar", "rer", "rır", "rir", "rur", "ror", "Rör", "uru", "Ere", "Irı", "oro", "örö", "rur", "rır", "ürü", "Ara", "uru"], "s2": ["Ere", "Irı", "Oro", "uru", "rur", "rır", "örö", "Iri", "Ere", "Uru", "ror", "rur", "Rör", "Ara", "Irı", "Rer", "Ror"], "s3": ["rur", "rir", "Rür", "rır", "ror", "rar", "Rer", "Ere", "Ir", "Ur", "oro", "ırı", "iri", "rır", "ara", "ere", "uru"]}, 
+            "d10": {"s1": ["Rör", "Rir", "rar", "Rer", "Ere", "Ror", "rur", "Oro", "rır", "iri", "rer", "Rür", "ror", "Uru", "Rör", "Ara", "rir", "iri", "Ere", "rur"], "s2": ["Ara", "ere", "Irı", "iri", "Uru", "örö", "Oro", "Rur", "rer", "rir", "ror", "Rur", "Uru", "rır", "Rör", "iri", "Ere", "rur", "Oro", "rer"], "s3": ["rır", "Rür", "ror", "rur", "rör", "rar", "rir", "iri", "Ere", "uru", "rer", "Rur", "Ror", "oro", "rer", "rir", "ror", "Rör", "uru", "Rür"]}, 
+            "d11": {"s1": ["iri", "ürü", "Ara", "Uru", "Irı", "Ere", "Örö", "rur", "Rer", "rır", "Ere", "rar", "Rör", "Oro", "Uru", "Rür", "rer", "Ara", "ror", "rur"], "s2": ["rar", "Rer", "rır", "rir", "rur", "Rör", "örö", "uru", "Ere", "Uru", "Ara", "Rer", "Irı", "iri", "rur", "rar", "Rör", "Rur", "Ere", "Oro"], "s3": ["rir", "Ere", "rur", "Oro", "Ror", "rer", "iri", "ror", "Rör", "rur", "Ara", "örö", "Oro", "Uru", "ürü", "rer", "rar", "ror", "rur", "rır"]}, 
+            "d12": {"s1": ["ror", "Rur", "uru", "rır", "örö", "rir", "rer", "rur", "Oro", "Ror", "iri", "Oro", "Rör", "Uru", "ürü", "rir", "Irı", "Ere", "Ara", "ror"], "s2": ["Uru", "Rör", "Irı", "iri", "ere", "Ara", "Rür", "Rer", "Ror", "Rir", "rar", "rur", "Uru", "ere", "rır", "Ere", "iri", "ürü", "Rur", "oro"], "s3": ["Ere", "Oro", "Rır", "ürü", "Rar", "Rer", "Irı", "iri", "Uru", "ror", "rır", "Rur", "Ere", "rir", "örö", "Oro", "Uru", "iri", "Ara", "rur"]}
         };
 
         let state = { name: "", progress: {} };
@@ -281,14 +261,13 @@
         let recorder, chunks = [];
         let activeReportDay = 0;
         let isTitreşimli = false;
-        
         let currentSetList = [];
 
         function startGame() {
             const n = document.getElementById('player-name').value.trim();
             if(!n) return alert("İsim giriniz!");
             state.name = n;
-            const saved = localStorage.getItem(`cs_r_hece_sorulu_${n.toLowerCase()}`);
+            const saved = localStorage.getItem(`cs_r_12gun_${n.toLowerCase()}`);
             if(saved) state = JSON.parse(saved);
             document.getElementById('display-name').innerText = n.toUpperCase();
             document.getElementById('login-screen').classList.add('hidden');
@@ -299,7 +278,7 @@
         function renderCards() {
             const area = document.getElementById('content-area');
             area.innerHTML = '';
-            for(let d=1; d<=7; d++) {
+            for(let d=1; d<=12; d++) {
                 const s1 = state.progress[`d${d}s1`];
                 const s2 = state.progress[`d${d}s2`];
                 const s3 = state.progress[`d${d}s3`];
@@ -312,7 +291,10 @@
                     <div class="level-card p-5 rounded shadow-lg flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-4">
-                                <h3 class="font-bold text-orange-500 tactical-font text-lg">GÜN ${d}</h3>
+                                <div>
+                                    <h3 class="font-bold text-orange-500 tactical-font text-lg">GÜN ${d}</h3>
+                                    <p class="text-xs font-mono text-gray-400 uppercase">${dayNames[d-1]}</p>
+                                </div>
                                 <i class="fas fa-calendar-day text-gray-600"></i>
                             </div>
                             <div class="space-y-3">
@@ -327,7 +309,7 @@
                                 </button>
                             </div>
                         </div>
-                        <button onclick="openMailModal(${d})" class="mt-6 w-full py-2 bg-blue-900/30 border border-blue-600 text-blue-400 hover:bg-blue-800 hover:text-white text-xs font-bold rounded uppercase">Raporu Gönder</button>
+                        <button onclick="openMailModal(${d})" class="mt-6 w-full py-2 bg-blue-900/30 border border-blue-600 text-blue-400 hover:bg-blue-800 hover:text-white text-xs font-bold rounded uppercase transition">Raporu Gönder</button>
                     </div>`;
             }
         }
@@ -335,12 +317,11 @@
         function openMission(d, s) {
             currentDay = d; currentSet = s; reps = 1; childScores = []; parentRate = 0;
             
-            // Tablodaki veriyi alıp rastgele karıştırıyoruz
+            // Veriyi alıp rastgele karıştırıyoruz
             currentSetList = [...syllableData[`d${d}`][`s${s}`]].sort(() => Math.random() - 0.5);
 
-            document.querySelectorAll('.modal-title-display').forEach(el => el.innerText = `GÜN ${d} - SET ${s}`);
+            document.querySelectorAll('.modal-title-display').forEach(el => el.innerText = `GÜN ${d} (${dayNames[d-1]}) - SET ${s}`);
             
-            // Yeni motivasyon mesajlarından rastgele seç
             const randomMotive = motives[Math.floor(Math.random() * motives.length)];
             document.getElementById('motivational-text').innerText = randomMotive;
             
@@ -363,7 +344,7 @@
                     const blob = new Blob(chunks, { type: 'audio/mp3' });
                     const url = URL.createObjectURL(blob);
                     document.getElementById('audio-player').src = url;
-                    const fileName = `${state.name.replace(/\s+/g, '_')}_Gun${currentDay}_Set${currentSet}.mp3`;
+                    const fileName = `${state.name.replace(/\s+/g, '_')}_Gun${currentDay}_${dayNames[currentDay-1]}_Set${currentSet}.mp3`;
                     document.getElementById('dl-btn').href = url;
                     document.getElementById('dl-btn').download = fileName;
                 };
@@ -372,7 +353,6 @@
                 updateSyllableDisplay();
                 document.getElementById('counter').innerText = `1 / ${currentSetList.length}`;
                 
-                // Skor butonlarını gizle ve soruyu göster (Sıfırlama)
                 document.getElementById('ask-score-btn').classList.remove('hidden');
                 document.getElementById('score-buttons-container').classList.add('hidden');
 
@@ -381,7 +361,6 @@
             } catch(e) { alert("Görev için mikrofon izni gerekli!"); }
         }
 
-        // Yenilik: Soruya tıklanınca puan butonlarını açan fonksiyon
         function showScoreButtons() {
             document.getElementById('ask-score-btn').classList.add('hidden');
             document.getElementById('score-buttons-container').classList.remove('hidden');
@@ -404,7 +383,6 @@
         }
 
         function recordRep(score) {
-            // (T) eklentisini puana yansıtıyoruz
             const finalScore = isTitreşimli ? score + "T" : score.toString();
             childScores.push(finalScore);
             
@@ -418,7 +396,6 @@
                 document.getElementById('counter').innerText = `${reps} / ${currentSetList.length}`;
                 updateSyllableDisplay();
 
-                // Sonraki heceye geçildi, tekrar soruyu göster, butonları gizle
                 document.getElementById('ask-score-btn').classList.remove('hidden');
                 document.getElementById('score-buttons-container').classList.add('hidden');
             } else {
@@ -434,7 +411,7 @@
         }
 
         function saveMission() {
-            if(!parentRate) return alert("Puan vermeden işlemi tamamlayamazsınız!");
+            if(!parentRate) return alert("Lütfen puan vermeden işlemi tamamlamayın!");
             
             state.progress[`d${currentDay}s${currentSet}`] = { 
                 child: childScores, 
@@ -442,7 +419,7 @@
                 syllables: currentSetList 
             };
             
-            localStorage.setItem(`cs_r_hece_sorulu_${state.name.toLowerCase()}`, JSON.stringify(state));
+            localStorage.setItem(`cs_r_12gun_${state.name.toLowerCase()}`, JSON.stringify(state));
             confetti({ particleCount: 150, spread: 60, origin: { y: 0.6 } });
             closeModal();
             renderCards();
@@ -465,8 +442,8 @@
             const s2 = state.progress[`d${day}s2`];
             const s3 = state.progress[`d${day}s3`];
             
-            const subject = `CS Raporu: ${state.name} - Gün ${day}`;
-            let body = `OPERATÖR: ${state.name.toUpperCase()}\nKONU: GÜN ${day} RAPORU\n\n`;
+            const subject = `CS Raporu: ${state.name} - GÜN ${day} (${dayNames[day-1]})`;
+            let body = `OPERATÖR: ${state.name.toUpperCase()}\nKONU: GÜN ${day} (${dayNames[day-1]}) RAPORU\n\n`;
             
             if(s1) {
                 body += `--- SET 1 ---\nEBEVEYN PUANI: [ ${s1.parent} / 5 ]\nOKUNAN HECELER: ${s1.syllables.join(' - ')}\nÇOCUK PUANLARI: ${s1.child.join(' - ')}\n\n`;
