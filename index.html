@@ -92,6 +92,7 @@
 
     <div class="scanline"></div>
 
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="flex items-center justify-center min-h-screen p-4 bg-[url('https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans/3381077/89e57849206d445348981440e74f329971936c64.png')] bg-cover bg-center">
         <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm z-0"></div>
         
@@ -127,13 +128,14 @@
         </div>
     </div>
 
+    <!-- GAME DASHBOARD -->
     <div id="game-dashboard" class="hidden min-h-screen bg-[#0d1116] pb-20">
         <header class="bg-[#1b1f27] border-b border-orange-900/30 sticky top-0 z-40 shadow-lg">
             <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center gap-4">
                     <div class="bg-orange-600 text-black font-bold w-8 h-8 flex items-center justify-center rounded">R</div>
                     <div>
-                        <h2 id="display-name" class="font-bold text-xl leading-tight text-white hud-font tracking-wide">OPERATOR</h2>
+                        <h2 id="display-name" class="font-bold text-xl leading-tight text-white hud-font tracking-wide uppercase">OPERATOR</h2>
                     </div>
                 </div>
                 <button onclick="location.reload()" class="text-xs text-red-500 border border-red-900 px-3 py-1 bg-red-900/10 hover:bg-red-900 hover:text-white transition uppercase">ÇIKIŞ</button>
@@ -142,14 +144,17 @@
 
         <main class="max-w-5xl mx-auto px-4 py-8">
             <div id="content-area" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
+                <!-- Javascript ile doldurulacak -->
+            </div>
         </main>
     </div>
 
+    <!-- MODAL -->
     <div id="mission-modal" class="modal-overlay">
         <div class="modal-content p-6">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white text-2xl">&times;</button>
             
+            <!-- NOT VE MOTİVASYON EKRANI -->
             <div id="step-note">
                 <h3 class="text-xl tactical-font text-orange-500 mb-4 text-center modal-title-display">GÜN X - SET Y</h3>
                 
@@ -166,17 +171,20 @@
                 <button onclick="startDrill()" class="cs-btn w-full py-4 text-white font-bold tracking-widest">OKUDUM, KAYDI BAŞLAT</button>
             </div>
 
+            <!-- GÖREV EKRANI -->
             <div id="step-drill" class="hidden">
                 <h3 class="text-xl tactical-font text-orange-500 mb-2 text-center modal-title-display">GÜN X - SET Y</h3>
                 <div class="text-center py-4 bg-black/30 rounded mb-4 border border-gray-800">
-                    <div id="syllable-display" class="text-6xl md:text-7xl font-black text-white/90 mb-2 italic tracking-wider">KELİME</div>
+                    <div id="syllable-display" class="text-5xl md:text-7xl font-black text-white/90 mb-2 italic tracking-wider">KELİME</div>
                     <p class="text-orange-500 font-mono text-xl" id="counter">1 / 20</p>
                 </div>
                 
+                <!-- Soru Butonu -->
                 <button id="ask-score-btn" onclick="showScoreButtons()" class="w-full py-4 rounded text-lg font-bold uppercase border-2 border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-black transition mb-3 animate-pulse">
-                    <i class="fas fa-question-circle mr-2"></i> Bu söylediğine kaç puan verirsin?
+                    <i class="fas fa-question-circle mr-2"></i> Bu söylediğini kaç verirsin?
                 </button>
 
+                <!-- Puanlama Butonları (Soruya tıklanınca görünecek) -->
                 <div id="score-buttons-container" class="hidden">
                     <div class="grid grid-cols-5 gap-2 mb-4">
                         <button onclick="recordRep(1)" class="number-btn rounded">1</button>
@@ -186,6 +194,7 @@
                         <button onclick="recordRep(5)" class="number-btn rounded">5</button>
                     </div>
                     
+                    <!-- Titreşimli Butonu -->
                     <button id="toggle-t" onclick="toggleT()" class="w-full py-3 rounded text-sm font-bold uppercase border border-blue-500 text-blue-400 hover:bg-blue-900/50 transition">
                         <i class="fas fa-wave-square mr-2"></i> Titreşimli Söylendi (T)
                     </button>
@@ -193,6 +202,7 @@
                 </div>
             </div>
 
+            <!-- EBEVEYN EKRANI -->
             <div id="step-parent" class="hidden text-center">
                 <h3 class="text-xl tactical-font text-yellow-500 mb-6">EBEVEYN PUANI</h3>
                 <div class="grid grid-cols-5 gap-2 mb-8">
@@ -209,6 +219,7 @@
                 <button onclick="saveMission()" class="cs-btn w-full py-3 text-white font-bold tracking-widest">KAYDET VE TAMAMLA</button>
             </div>
             
+            <!-- MAİL EKRANI -->
             <div id="step-mail" class="hidden text-center">
                 <h3 class="text-xl tactical-font text-blue-400 mb-6 uppercase">Rapor Gönder</h3>
                 <div class="space-y-3">
@@ -219,51 +230,25 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const RECIPIENTS = "mehmethanefibulduk@gmail.com,zeynepsilamutlu@gmail.com,zeynepakda.z@gmail.com";
         
         const dayNames = ["1. GÜN", "2. GÜN", "3. GÜN", "4. GÜN", "5. GÜN", "6. GÜN", "7. GÜN"];
 
         const motives = [
-            "20 kelimeyi o an değerlendirmeyi ve ses kaydında söylemeyi ayrıca ses kaydı aldıktan sonra ilk 10 kelimeyi nasıl yaptığını değerlendirmeyi unutma."
+            "Ödevi yaparken önce sen söyle ve ses kaydı alırken kendini değerlendir. Yazma görevini, ses kaydı bittikten sonra dinleyerek yaz. Yazdığın kağıdı getirmen dileğimle :)"
         ];
 
+        // 28 Nisan Dosyasından Çıkarılan Yeni Kelime Listesi
         const syllableData = {
-            "d1": {
-                "s1": ["ring", "raf", "bar", "zar", "kur", "pir", "roka", "rüzgar", "çerez", "boru", "ağrı", "fırın", "vapur", "şarkı", "şeker", "katır", "çadır", "kömür", "fare", "gitar"], 
-                "s2": ["rap", "renk", "bor", "dur", "sur", "kar", "ritim", "robot", "rende", "bere", "ördek", "mısır", "sarı", "para", "garaj", "boru", "sünger", "fener", "ağır", "armut"], 
-                "s3": ["ruh", "her", "nar", "sur", "rest", "risk", "rahat", "ranza", "rejim", "fırça", "burun", "roman", "damar", "defter", "döner", "kürek", "dere", "para", "toprak", "sakar"]
-            }, 
-            "d2": {
-                "s1": ["rus", "risk", "ret", "gör", "gür", "kur", "rüzgar", "ressam", "renksiz", "rapor", "artı", "sarı", "martı", "çorba", "bakır", "çamur", "duvar", "garaj", "mantar", "bakır"], 
-                "s2": ["risk", "ruh", "ruj", "mor", "pir", "sur", "rende", "raket", "fırın", "ağır", "kömür", "bahar", "sarı", "toprak", "pazar", "şarkı", "rejim", "armut", "şeker", "döner"], 
-                "s3": ["ruh", "ret", "har", "kür", "far", "bor", "rakam", "rampa", "artı", "rende", "bere", "ördek", "mısır", "sarı", "para", "garaj", "sarı", "gitar", "rozet", "ressam"]
-            }, 
-            "d3": {
-                "s1": ["rap", "renk", "bor", "dur", "ritim", "robot", "ressam", "rende", "bere", "ördek", "mısır", "sarı", "para", "garaj", "döner", "kürek", "dere", "duvar", "toprak", "sakar"], 
-                "s2": ["ring", "raf", "bar", "zar", "resim", "ördek", "mısır", "sarı", "para", "fırça", "duvar", "toprak", "artı", "gitar", "martı", "çorba", "pazar", "şarkı", "sünger", "armut"], 
-                "s3": ["kur", "pir", "rap", "renk", "bor", "dur", "roka", "rüzgar", "döner", "kürek", "burun", "defter", "toprak", "sakar", "bere", "kömür", "mısır", "fırça", "katır", "şeker"]
-            }, 
-            "d4": {
-                "s1": ["rap", "renk", "bor", "dur", "ritim", "robot", "rende", "ressam", "renksiz", "rapor", "artı", "burun", "martı", "çorba", "armut", "çerez", "bahar", "fener", "şarkı", "defter"], 
-                "s2": ["ret", "ruh", "ruj", "kür", "pir", "resim", "roka", "rüzgar", "çamur", "bakır", "mısır", "çadır", "sarı", "martı", "sakar", "katır", "kömür", "şeker", "bahar", "duvar"], 
-                "s3": ["ring", "raf", "bar", "zar", "rende", "bere", "sünger", "martı", "sarı", "para", "garaj", "çamur", "bere", "ördek", "mısır", "sakar", "pazar", "gitar", "çorba", "toprak"]
-            }, 
-            "d5": {
-                "s1": ["raf", "ruj", "rampa", "ranza", "dere", "çerez", "ressam", "rüzgar", "ağrı", "kürek", "burun", "şarkı", "döner", "fener", "gitar", "mantar", "vapur", "kömür", "bahar", "mısır"], 
-                "s2": ["rap", "renk", "bor", "dur", "resim", "roka", "rüzgar", "çamur", "bakır", "mısır", "çadır", "sarı", "martı", "sakar", "katır", "kömür", "şeker", "bahar", "duvar", "döner"], 
-                "s3": ["ring", "raf", "bar", "zar", "ritim", "robot", "rende", "ressam", "renksiz", "rapor", "artı", "çerez", "martı", "çorba", "armut", "çerez", "bahar", "fener", "şarkı", "defter"]
-            }, 
-            "d6": {
-                "s1": ["risk", "ruh", "ruj", "mor", "pir", "ritim", "robot", "rende", "ressam", "renksiz", "rapor", "mantar", "kömür", "duvar", "toprak", "çadır", "katır", "damar", "sünger", "armut"], 
-                "s2": ["ring", "raf", "bar", "zar", "ritim", "robot", "rende", "fare", "garaj", "çerez", "çamur", "sakar", "ağır", "mantar", "damar", "fırın", "kömür", "dere", "defter", "katır"], 
-                "s3": ["kur", "pir", "ruh", "her", "nar", "sur", "rende", "bere", "ördek", "mısır", "sarı", "para", "garaj", "fener", "gitar", "mantar", "vapur", "kömür", "bahar", "şeker"]
-            }, 
-            "d7": {
-                "s1": ["ring", "raf", "bar", "zar", "pazar", "şarkı", "rejim", "armut", "bere", "ördek", "mısır", "sakar", "ağır", "mantar", "damar", "fırın", "kömür", "dere", "defter", "katır"], 
-                "s2": ["ruh", "her", "nar", "sur", "ritim", "robot", "rende", "burun", "fırça", "sarı", "vapur", "armut", "kömür", "bahar", "sünger", "çamur", "katır", "mantar", "boru", "çadır"], 
-                "s3": ["kur", "pir", "rap", "renk", "bor", "dur", "döner", "kürek", "dere", "para", "toprak", "sakar", "çamur", "rende", "katır", "ördek", "mısır", "boru", "para", "sünger"]
-            }
+            "d1": {"s1": ["rahat", "rakam", "roka", "çamur", "kömür", "asker", "turta", "kirpi", "fare", "şurup", "kibrit", "tren", "radyo", "kırmızı", "kurbağa", "gergedan", "merdiven", "darbuka", "çekirge", "değirmen"], "s2": ["rakip", "rampa", "ranza", "şeker", "kemer", "doktor", "ressam", "rende", "akrep", "kare", "erik", "börek", "yorgan", "dondurma", "çekirdek", "süpürge", "deterjan", "ejderha", "sihirbaz", "makarna"], "s3": ["robot", "rüzgar", "rapor", "fener", "hamur", "pazar", "resim", "ranza", "peri", "zebra", "burun", "rüya", "yirmi", "uçurtma", "güvercin", "tencere", "kamera", "testere", "mağara", "daire"]}, 
+            "d2": {"s1": ["rejim", "rende", "resim", "mantar", "ahır", "defter", "rüzgar", "ressam", "renksiz", "yoğurt", "yağmur", "sarı", "martı", "pencere", "minare", "fotoğraf", "kanguru", "ızgara", "tabure", "biberon"], "s2": ["ressam", "ritim", "roket", "gitar", "duvar", "rapor", "robot", "raket", "fırın", "yara", "yaprak", "bahar", "sarı", "uçurum", "öksürük", "sürahi", "öğretmen", "öğrenci", "prenses", "sarımsak"], "s3": ["roman", "rozet", "rica", "sıfır", "panjur", "incir", "viraj", "rampa", "artı", "yarış", "saray", "ördek", "mısır", "turuncu", "paraşüt", "zürafa", "araba", "raptiye", "yarasa", "akvaryum"]}, 
+            "d3": {"s1": ["renksiz", "raket", "roman", "biber", "zincir", "vapur", "zebra", "rende", "bayrak", "ördek", "kaydırak", "kurabiye", "silindir", "kraliçe", "portakal", "lunapark", "zehirli", "yumurta", "karanlık", "rafadan"], "s2": ["ağrı", "ördek", "kürek", "obur", "fakir", "döner", "mısır", "sarı", "tramvay", "peynir", "rahibe", "randevu", "reçete", "reçine", "rutubet", "refakat", "referans", "rehavet", "rejisör", "rengarenk"], "s3": ["çorba", "artı", "fare", "berber", "fırfır", "kraker", "roka", "rüzgar", "döner", "ayran", "restoran", "rezene", "rezidans", "riziko", "romancı", "romantik", "rakipsiz", "rodeo", "makarna", "akarsu"]}, 
+            "d4": {"s1": ["garaj", "bere", "çerez", "kurt", "kırk", "harf", "rende", "kuyruk", "kartal", "terlik", "paraşüt", "kumbara", "zürafa", "arkadaş", "armağan", "aşure", "atari", "turuncu", "merdiven", "tencere"], "s2": ["boru", "dere", "burun", "dört", "park", "zarf", "roka", "rimel", "marul", "reçel", "karate", "karınca", "terazi", "dondurma", "mikrofon", "uçurtma", "süpürge", "araba", "adaptör", "akciğer"], "s3": ["fırın", "fırça", "martı", "sirk", "artı", "ırmak", "sünger", "halter", "goril", "kral", "abajur", "antrenör", "asansör", "hamburger", "birdirbir", "canavar", "çamaşır", "bardak", "çardak", "toprak"]}, 
+            "d5": {"s1": ["para", "sarı", "şarkı", "armut", "örgü", "örtü", "ressam", "tırtıl", "ağrı", "haberdar", "dinozor", "misafir", "kafadar", "mücevher", "matador", "muhabir", "semaver", "tebeşir", "kuaför", "berber"], "s2": ["toprak", "armut", "ağır", "orman", "ördek", "hırsız", "rüzgar", "çamur", "bakır", "kırmızı", "kurbağa", "gergedan", "merdiven", "darbuka", "çekirge", "değirmen", "dondurma", "çekirdek", "süpürge", "deterjan"], "s3": ["vapur", "bahar", "bakır", "martı", "çarşaf", "karga", "rende", "ressam", "renksiz", "ejderha", "sihirbaz", "makarna", "uçurtma", "güvercin", "tencere", "kamera", "testere", "mağara", "daire", "pencere"]}, 
+            "d6": {"s1": ["defter", "mısır", "çadır", "tırnak", "şarkı", "garson", "robot", "minare", "fotoğraf", "kanguru", "ızgara", "tabure", "biberon", "uçurum", "öksürük", "sürahi", "öğretmen", "öğrenci", "kardeş", "prenses"], "s2": ["sünger", "çamur", "duvar", "çorba", "çarpı", "tartı", "rende", "sarımsak", "turuncu", "paraşüt", "zürafa", "araba", "raptiye", "yarasa", "akvaryum", "kaydırak", "kurabiye", "silindir", "kraliçe", "portakal"], "s3": ["fener", "gitar", "pazar", "bardak", "dergi", "hortum", "rende", "lunapark", "zehirli", "yumurta", "karanlık", "rafadan", "rahibe", "randevu", "reçete", "reçine", "rutubet", "refakat", "referans", "rehavet"]}, 
+            "d7": {"s1": ["kömür", "katır", "satır", "dürbün", "bornoz", "tırmık", "rejisör", "rengarenk", "restoran", "rezene", "romantik", "rakipsiz", "rodeo", "makarna", "akarsu", "paraşüt", "kumbara", "zürafa", "arkadaş", "armağan"], "s2": ["sakar", "damar", "şeker", "perde", "fırça", "korkunç", "aşure", "atari", "turuncu", "merdiven", "tencere", "karate", "karınca", "terazi", "dondurma", "mikrofon", "uçurtma", "süpürge", "araba", "karton"], "s3": ["mantar", "ördek", "çerez", "korsan", "hırka", "torba", "adaptör", "akciğer", "abajur", "antrenör", "asansör", "hamburger", "birdirbir", "canavar", "çamaşır", "haberdar", "dinozor", "misafir", "ördek", "bordo"]}
         };
 
         let state = { name: "", progress: {} };
@@ -280,10 +265,9 @@
             const n = document.getElementById('player-name').value.trim();
             if(!n) return alert("İsim giriniz!");
             state.name = n;
-            const saved = localStorage.getItem(`cs_r_kelime_28nisan_${n.toLowerCase()}`);
+            const saved = localStorage.getItem(`cs_r_kelime_28nisan_v2_${n.toLowerCase()}`);
             if(saved) state = JSON.parse(saved);
             
-            // Türkçe karakter desteğiyle büyük harfe çevirme
             document.getElementById('display-name').innerText = n.toLocaleUpperCase('tr-TR');
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('game-dashboard').classList.remove('hidden');
@@ -395,7 +379,6 @@
         }
 
         function updateSyllableDisplay() {
-            // Türkçe karakterlerin doğru büyümesi için toLocaleUpperCase('tr-TR') kullanıldı
             document.getElementById('syllable-display').innerText = currentSetList[reps - 1].toLocaleUpperCase('tr-TR');
         }
 
@@ -436,7 +419,7 @@
                 syllables: currentSetList 
             };
             
-            localStorage.setItem(`cs_r_kelime_28nisan_${state.name.toLowerCase()}`, JSON.stringify(state));
+            localStorage.setItem(`cs_r_kelime_28nisan_v2_${state.name.toLowerCase()}`, JSON.stringify(state));
             confetti({ particleCount: 150, spread: 60, origin: { y: 0.6 } });
             closeModal();
             renderCards();
@@ -459,7 +442,6 @@
             const s2 = state.progress[`d${day}s2`];
             const s3 = state.progress[`d${day}s3`];
             
-            // Türkçe karakter uyumu mail başlığında
             const subject = `CS Raporu: ${state.name.toLocaleUpperCase('tr-TR')} - ${dayNames[day-1]}`;
             let body = `OPERATÖR: ${state.name.toLocaleUpperCase('tr-TR')}\nKONU: ${dayNames[day-1]} RAPORU\n\n`;
             
